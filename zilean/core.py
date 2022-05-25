@@ -2,6 +2,14 @@ import os
 
 
 def read_api_key(api_key=None):
+    """
+    Fetch the Riot Development API key.
+    Keyword arguments:
+        api_key: A string representing the api Key. If None (default), it will try to read the
+            file `apikey` in the current directory.
+    Return:
+        String, the api_key.
+    """
     if not api_key:
         if not os.path.exists('apikey'):
             raise ValueError("Please provide valid Riot API key.")
@@ -13,6 +21,14 @@ def read_api_key(api_key=None):
 
 
 def json_data_mask(dic):
+    """
+    Construct a list of keys that have dictionary as their corresponding value pair. The list
+    acts as a mask for further cleaning.
+    Arguments:
+        dic: Any dictionary.
+    Return:
+        List. Containing keys of `dic` which have dictionary as value. 
+    """
     keys_to_remove = []
     for k,v in dic.items():
         if type(v) is dict:
@@ -20,7 +36,17 @@ def json_data_mask(dic):
     return keys_to_remove
 
 
-def clean_timeframe(timeline, frame=5):
+def clean_timeframe(timeline, frame=8):
+    """
+    Clean unwanted features of a specific frame from a Riot MatchTimelineDto and fetch player data. 
+    Arguments:
+        timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+    Keyword arguments:
+        frame: A integer representing the frame of interest. The function does not handle cases where
+            `frame` is larger than the total number of frames of `timeline`.
+    Return:
+        List of dictionaries. Each dictionary represent a player at `frame` of `timeline`
+    """
     players_list = list(timeline['info']['frames'][frame]['participantFrames'].values())
     keys_to_remove = json_data_mask(players_list[0])
     keys_to_remove += ['currentGold', 'goldPerSecond', 'participantId', 'totalDamageDone', 'totalDamageDoneToChampions', 'totalDamageTaken']
@@ -35,6 +61,13 @@ def clean_timeframe(timeline, frame=5):
 
 
 def add_creep_score(timeframe):
+    """
+    Compute and append the creep score as a feature for a specific timeframe.
+    Arguments:
+        timeframe: A list of dictionaries. Each dictionary represent a player at this timeframe.
+    Return:
+        `timeframe` with creep score computed.
+    """
     if type(timeframe) is not list:
         raise TypeError("Input timeframe must be a list")
     elif type(timeframe[0]) is not dict:
@@ -54,7 +87,20 @@ def add_creep_score(timeframe):
     return timeframe
 
 
-def process_timeframe(timeline, win, frame=10, matchid=None):
+def process_timeframe(timeline, win, frame=8, matchid=None):
+    """
+    Return a single dictionary with cleaned and processed data for a specific frame of
+    a Riot MatchTimelineDto.
+    Arguments:
+        timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+        win: Boolean. Whether the blue side won this match.
+    Keyword arguments:
+        frame: A integer representing the frame of interest. The function does not handle cases where
+            `frame` is larger than the total number of frames of `timeline`.
+        matchid: The u ique matchid corresponding to `timeline`.
+    Return:
+        Dictionary containing cleaned and processed data for `frame` in `timeline`. Ready for further data analysis.
+    """
     cleaned = clean_timeframe(timeline, frame)
     cleaned = add_creep_score(cleaned)
     final_dict = {}
