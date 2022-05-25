@@ -115,13 +115,12 @@ def add_creep_score(timeframe):
     return timeframe
 
 
-def process_timeframe(timeline, win, frame=8, matchid=None):
+def process_timeframe(timeline, frame=8, matchid=None):
     """
-    Return a single dictionary with cleaned and processed data for a specific frame of
-    a Riot MatchTimelineDto.
+    Return a single dictionary with cleaned and processed data for a specific frame of a
+    Riot MatchTimelineDto.
     Arguments:
      - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
-     - win: Boolean. Whether the blue side won this match.
     Keyword arguments:
      - frame: A integer representing the frame of interest. The function does not handle cases where
         `frame` is larger than the total number of frames of `timeline`.
@@ -129,6 +128,7 @@ def process_timeframe(timeline, win, frame=8, matchid=None):
     Return:
      - Dictionary containing cleaned and processed data for `frame` in `timeline`. Ready for further data analysis.
     """
+    win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
     cleaned = clean_timeframe(timeline, frame)
     cleaned = add_creep_score(cleaned)
     final_dict = {}
