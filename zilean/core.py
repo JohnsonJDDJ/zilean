@@ -1,14 +1,16 @@
 import os
+import json
+from tqdm.notebook import tqdm
 
 
 def read_api_key(api_key=None):
     """
     Fetch the Riot Development API key.
     Keyword arguments:
-        api_key: A string representing the api Key. If None (default), it will try to read the
-            file `apikey` in the current directory.
+     - api_key: A string representing the api Key. If None (default), it will try to read the
+        file `apikey` in the current directory.
     Return:
-        String, the api_key.
+     - String, the api_key.
     """
     if not api_key:
         if not os.path.exists('apikey'):
@@ -20,14 +22,40 @@ def read_api_key(api_key=None):
         return api_key
 
 
+def write_messy_json(dic, file):
+    """
+    Append a dictionary to a file. The file are organized line-by-line (each dic is a line).
+    Arguments:
+     - dic: Any dictionary.
+     - dile: String, representing a file name.
+    """
+    with open(file, 'a') as f:
+        json.dump(dic, f)
+        f.write('\n')
+
+
+def clean_json(file):
+    """
+    Clean a messy file into a propoer dictionary and rewrite the file as proper JSON.
+    Arguments:
+     - file: messy file produced by write_messy_json(dic, file).
+    """
+    with open(file, 'r') as f:
+        large_dic = []
+        for i, line in enumerate(tqdm(f)):
+            large_dic += [json.loads(line)]
+    with open(file, 'w') as f:  
+        json.dump(large_dic, f)
+
+
 def json_data_mask(dic):
     """
     Construct a list of keys that have dictionary as their corresponding value pair. The list
     acts as a mask for further cleaning.
     Arguments:
-        dic: Any dictionary.
+     - dic: Any dictionary.
     Return:
-        List. Containing keys of `dic` which have dictionary as value. 
+     - List. Containing keys of `dic` which have dictionary as value. 
     """
     keys_to_remove = []
     for k,v in dic.items():
@@ -40,12 +68,12 @@ def clean_timeframe(timeline, frame=8):
     """
     Clean unwanted features of a specific frame from a Riot MatchTimelineDto and fetch player data. 
     Arguments:
-        timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+     - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     Keyword arguments:
-        frame: A integer representing the frame of interest. The function does not handle cases where
-            `frame` is larger than the total number of frames of `timeline`.
+     - frame: A integer representing the frame of interest. The function does not handle cases where
+        `frame` is larger than the total number of frames of `timeline`.
     Return:
-        List of dictionaries. Each dictionary represent a player at `frame` of `timeline`
+     - List of dictionaries. Each dictionary represent a player at `frame` of `timeline`
     """
     players_list = list(timeline['info']['frames'][frame]['participantFrames'].values())
     keys_to_remove = json_data_mask(players_list[0])
@@ -64,9 +92,9 @@ def add_creep_score(timeframe):
     """
     Compute and append the creep score as a feature for a specific timeframe.
     Arguments:
-        timeframe: A list of dictionaries. Each dictionary represent a player at this timeframe.
+     - timeframe: A list of dictionaries. Each dictionary represent a player at this timeframe.
     Return:
-        `timeframe` with creep score computed.
+     - `timeframe` with creep score computed.
     """
     if type(timeframe) is not list:
         raise TypeError("Input timeframe must be a list")
@@ -92,14 +120,14 @@ def process_timeframe(timeline, win, frame=8, matchid=None):
     Return a single dictionary with cleaned and processed data for a specific frame of
     a Riot MatchTimelineDto.
     Arguments:
-        timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
-        win: Boolean. Whether the blue side won this match.
+     - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+     - win: Boolean. Whether the blue side won this match.
     Keyword arguments:
-        frame: A integer representing the frame of interest. The function does not handle cases where
-            `frame` is larger than the total number of frames of `timeline`.
-        matchid: The u ique matchid corresponding to `timeline`.
+     - frame: A integer representing the frame of interest. The function does not handle cases where
+        `frame` is larger than the total number of frames of `timeline`.
+     - matchid: The u ique matchid corresponding to `timeline`.
     Return:
-        Dictionary containing cleaned and processed data for `frame` in `timeline`. Ready for further data analysis.
+     - Dictionary containing cleaned and processed data for `frame` in `timeline`. Ready for further data analysis.
     """
     cleaned = clean_timeframe(timeline, frame)
     cleaned = add_creep_score(cleaned)
