@@ -1,3 +1,4 @@
+from inspect import FrameInfo
 import os
 import json
 from tqdm.notebook import tqdm
@@ -64,7 +65,7 @@ def json_data_mask(dic):
     return keys_to_remove
 
 
-def clean_timeframe(timeline, frame=8):
+def clean_timeframe(timeline, frames=[8]):
     """
     Clean unwanted features of a specific frame from a Riot MatchTimelineDto and fetch player data. 
     Arguments:
@@ -73,68 +74,75 @@ def clean_timeframe(timeline, frame=8):
      - frame: A integer representing the frame of interest. The function does not handle cases where
         `frame` is larger than the total number of frames of `timeline`.
     Return:
-     - List of dictionaries. Each dictionary represent a player at `frame` of `timeline`
+     - Dictionary of list of dictionaries. Each nested dictionary represent a player at one `frame` of `timeline`
     """
-    players_list = list(timeline['info']['frames'][frame]['participantFrames'].values())
-    keys_to_remove = json_data_mask(players_list[0])
-    keys_to_remove += ['currentGold', 'goldPerSecond', 'participantId', 'totalDamageDone', 'totalDamageDoneToChampions', 'totalDamageTaken']
-    for player in players_list:
-        if 'damageStats' in player.keys():
-            damage_stat = player['damageStats']
-            player.update(damage_stat)
-        for key in keys_to_remove:
-            if key in player.keys():
-                player.pop(key)
-    return players_list
+    players_mega_dict = {}
+    for frame in frames:
+        players_mega_dict[str(frame)] = list(timeline['info']['frames'][frame]['participantFrames'].values())
+    keys_to_remove = json_data_mask(players_mega_dict[str(frames[0])][0])
+    keys_to_remove += ['currentGold', 'goldPerSecond', 'participantId', 
+                       'magicDamageDone', 'magicDamageDoneToChampions', 'magicDamageTaken',
+                       'physicalDamageDone', 'physicalDamageDoneToChampions', 'physicalDamageTaken',
+                       'trueDamageDone', 'trueDamageDoneToChampions', 'trueDamageTaken']
+    for frame, player_list in players_mega_dict.items():
+        for player in player_list:
+            if 'damageStats' in player.keys():
+                damage_stat = player['damageStats']
+                player.update(damage_stat)
+            for key in keys_to_remove:
+                if key in player.keys():
+                    player.pop(key)
+    return players_mega_dict
 
 
-def add_creep_score(timeframe):
+def add_creep_score(timeframes):
     """
     Compute and append the creep score as a feature for a specific timeframe.
     Arguments:
-     - timeframe: A list of dictionaries. Each dictionary represent a player at this timeframe.
+     - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at this timeframe.
     Return:
      - `timeframe` with creep score computed.
     """
-    if type(timeframe) is not list:
-        raise TypeError("Input timeframe must be a list")
-    elif type(timeframe[0]) is not dict:
-        raise TypeError("Elements of inputted timeframe are not dicts.")
+    if type(timeframes) is not dict:
+        raise TypeError("Input timeframes must be a dictionary")
     
-    for player in timeframe:
-        if 'jungleMinionsKilled' in player.keys() and 'minionsKilled' in player.keys():
-            player['creepScore'] = player['jungleMinionsKilled'] +player['minionsKilled']
-            player.pop('jungleMinionsKilled')
-            player.pop('minionsKilled')
-        elif 'jungleMinionsKilled' not in player.keys() and 'minionsKilled' not in player.keys():
-            if 'creepScore' not in player.keys():
+    for frame, player_list in timeframes.items():
+        for player in player_list:
+            if 'jungleMinionsKilled' in player.keys() and 'minionsKilled' in player.keys():
+                player['creepScore'] = player['jungleMinionsKilled'] +player['minionsKilled']
+                player.pop('jungleMinionsKilled')
+                player.pop('minionsKilled')
+            elif 'jungleMinionsKilled' not in player.keys() and 'minionsKilled' not in player.keys():
+                if 'creepScore' not in player.keys():
+                    raise ValueError("Missing information to construct creep score for a player.")
+            else:
                 raise ValueError("Missing information to construct creep score for a player.")
-        else:
-            raise ValueError("Missing information to construct creep score for a player.")
     
-    return timeframe
+    return timeframes
 
 
-def process_timeframe(timeline, frame=8, matchid=None):
+def process_timeframe(timeline, frames=[8], matchid=None):
     """
     Return a single dictionary with cleaned and processed data for a specific frame of a
     Riot MatchTimelineDto.
     Arguments:
      - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     Keyword arguments:
-     - frame: A integer representing the frame of interest. The function does not handle cases where
-        `frame` is larger than the total number of frames of `timeline`.
+     - frame: A list of integer representing the frames of interest. The function does not handle cases where
+        element of `frame` is larger than the total number of frames of `timeline`.
      - matchid: The u ique matchid corresponding to `timeline`.
     Return:
-     - Dictionary containing cleaned and processed data for `frame` in `timeline`. Ready for further data analysis.
+     - Dictionary containing cleaned and processed data for each frame in `frames` in `timeline`. 
+        Ready for further data analysis.
     """
     win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
-    cleaned = clean_timeframe(timeline, frame)
+    cleaned = clean_timeframe(timeline, frames)
     cleaned = add_creep_score(cleaned)
     final_dict = {}
-    for i in range(5):
-        for key in list(cleaned[0].keys()):
-            final_dict[key+'_'+str(i)] = cleaned[i][key] - cleaned[i+5][key]
+    for frame in frames:
+        for i in range(5):
+            for key in list(cleaned[str(frame)][0].keys()):
+                final_dict[key+'_'+str(i)+'_frame'+str(frame)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
     final_dict['matchId'] = matchid if matchid else 'UNKNOWN'
     final_dict['win'] = bool(win)
     return final_dict
