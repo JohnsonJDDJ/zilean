@@ -140,10 +140,16 @@ def process_timeframe(timeline, frames=[8], matchid=None):
     cleaned = clean_timeframe(timeline, frames)
     cleaned = add_creep_score(cleaned)
     final_dict = {}
-    for frame in frames:
+    if len(frames) == 1:
+        frame = frames[0]
         for i in range(5):
             for key in list(cleaned[str(frame)][0].keys()):
-                final_dict[key+'_'+str(i)+'_frame'+str(frame)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
+                final_dict[key+'_'+str(i)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
+    else:
+        for frame in frames:
+            for i in range(5):
+                for key in list(cleaned[str(frame)][0].keys()):
+                    final_dict[key+'_'+str(i)+'_frame'+str(frame)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
     final_dict['matchId'] = matchid if matchid else 'UNKNOWN'
     final_dict['win'] = bool(win)
     return final_dict

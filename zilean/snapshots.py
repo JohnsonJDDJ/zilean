@@ -16,7 +16,9 @@ class SnapShots:
     def frame_independent_summary(self) -> list:
         result_list = []
         for frame in self.frames:
-            result_list += [process_timeframe(self.timeline, [frame], self.matchid)]
+            frame_dic = process_timeframe(self.timeline, [frame], self.matchid)
+            frame_dic['frame'] = frame
+            result_list += [frame_dic]
         return result_list
     
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
