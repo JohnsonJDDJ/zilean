@@ -1,6 +1,3 @@
-from msilib.schema import Error
-from xml.dom import InvalidAccessErr
-from yaml import KeyToken
 from riotwatcher import LolWatcher
 
 from .core import *
@@ -8,11 +5,20 @@ from .core import *
 class SnapShots:
 
     def __init__(self, timeline, frames=[8], matchid=None) -> None:
-        self.summary = process_timeframe(timeline, frames, matchid)
+        self.timeline = timeline
         self.matchid = matchid
         self.frames = frames
-        self.win = self.summary['win']
+        self.win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
 
+    def summary(self) -> dict:
+        return process_timeframe(self.timeline, self.frames, self.matchid)
+
+    def frame_independent_summary(self) -> list:
+        result_list = []
+        for frame in self.frames:
+            result_list += [process_timeframe(self.timeline, [frame], self.matchid)]
+        return result_list
+    
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
         key = read_api_key(api_key)
