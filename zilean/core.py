@@ -71,8 +71,8 @@ def clean_timeframe(timeline, frames=[8]):
     Arguments:
      - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     Keyword arguments:
-     - frame: A integer representing the frame of interest. The function does not handle cases where
-        `frame` is larger than the total number of frames of `timeline`.
+     - frames: A list of integers representing the frames of interest. The function does not handle cases where
+        element of `frames` is larger than the total number of frames of `timeline`.
     Return:
      - Dictionary of list of dictionaries. Each nested dictionary represent a player at one `frame` of `timeline`
     """
@@ -99,7 +99,8 @@ def add_creep_score(timeframes):
     """
     Compute and append the creep score as a feature for a specific timeframe.
     Arguments:
-     - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at this timeframe.
+     - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
+        timeframe of interest.
     Return:
      - `timeframe` with creep score computed.
     """
@@ -128,9 +129,9 @@ def process_timeframe(timeline, frames=[8], matchid=None):
     Arguments:
      - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     Keyword arguments:
-     - frame: A list of integer representing the frames of interest. The function does not handle cases where
-        element of `frame` is larger than the total number of frames of `timeline`.
-     - matchid: The u ique matchid corresponding to `timeline`.
+     - frames: A list of integer representing the frames of interest. The function does not handle cases where
+        element of `frames` is larger than the total number of frames of `timeline`.
+     - matchid: The unique matchid corresponding to `timeline`.
     Return:
      - Dictionary containing cleaned and processed data for each frame in `frames` in `timeline`. 
         Ready for further data analysis.
