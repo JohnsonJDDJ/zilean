@@ -10,6 +10,7 @@ def main():
     args = sys.argv[1:]
     frames = [int(arg) for arg in args]
     print(f"Producing game snapshots at frames: {frames}.")
+    file_name = '_'.join(str(e) for e in frames)
 
     # Load cleaned matches
     with open('data/matches_cleaned.json') as f:
@@ -21,9 +22,8 @@ def main():
 
     # Split train test and save to disk
     train, test = train_test_split(data, test_size=0.33, random_state=42)
-    train.to_csv("data/train.csv")
-    test.to_csv("data/test.csv")
-
+    train.to_csv("data/train_"+file_name+".csv")
+    test.to_csv("data/test_"+file_name+".csv")
 
 if __name__ == "__main__":
     main()
