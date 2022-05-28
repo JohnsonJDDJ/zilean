@@ -9,13 +9,14 @@ def main():
     # Parse input: choice of frames
     args = sys.argv[1:]
     frames = [int(arg) for arg in args]
+    print(f"Producing game snapshots at frames: {frames}.")
 
     # Load cleaned matches
     with open('data/matches_cleaned.json') as f:
         matches = json.load(f)
 
     # Make DataFrame
-    snap_list = [SnapShots(match['timeline'], [8, 12], matchid=match['id']) for match in matches]
+    snap_list = [SnapShots(match['timeline'], frames, matchid=match['id']) for match in matches]
     data = pd.DataFrame([snap.summary() for snap in snap_list])
 
     # Split train test and save to disk
