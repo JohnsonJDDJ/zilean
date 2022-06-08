@@ -3,19 +3,54 @@ from riotwatcher import LolWatcher
 from .core import *
 
 class SnapShots:
+    """
+    SnapShots is used for extracting interesting player data from Riot `MatchTimelineDto`s.
+    SnapShots is a helper object that facilitates data analysis on League of Legends matches.
 
-    def __init__(self, timeline, frames=[8], matchid=None, creep_score=True, porportion=True) -> None:
-        self.timeline = timeline
-        self.matchid = matchid
+    The reason for the name is because SnapShots can extract player data from a match at specific
+    time intervals, or `frames` (in minutes). Data at frames of interest can be used to, for 
+    example, predict the result of a match.
+
+    Arguments:
+
+    - timelines: String, a file name where the source data are stored. The source data should
+      be a list of dictionaries, where each dictionary represent one unique match. The
+      dictionaries will have two keys: 
+      - `id`: String, to indicate the unique match id of the match.
+      - `timeline`: a Riot `MatchTimelineDto`.
+
+    Keyword Arguments:
+    
+    - frames: List of integers, indicating the frames (in minutes) of interest. Default [8].
+    - creep_score: Boolean. If True (recommended), then compute the creep score for the players, then
+      drop the `minionKilled` and `jungleMinionKilled` feature of the players.
+    - porportion: Boolean. If True, then add `goldPorportion` and `xpPorportion` as features to the players.
+    """
+
+    def __init__(self, timelines, frames=[8], creep_score=True, porportion=True) -> None:
+        self.timelines = timelines
         self.frames = frames
-        self.win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
         self.creep_score = creep_score
         self.porportion = porportion
         self.summary_ = None;
         self.frame_independent_summary_ = None;
 
-    def summary(self) -> dict:
-        """Return summary statistics of all the timeframes of interest as one dictionary."""
+    def summary(self, frame_independent=False) -> list:
+        """
+        Return the summary for all the matches (Riot MatchTimelineDtos). For each match,
+        summary statistics of every time frame of interest is computed. The summary is ready
+        for further data analysis.
+
+        Keyword Arguments:
+        
+        - frame_independent: Boolean. If False (default), each match (Riot MatchTimelineDto) is
+        one dictionary. If True, each frame (in minutes) of a match is one dictionary.
+
+        Return:
+        
+        - A list of dictionaries, ready for further data analysis. Each dictionary is either
+        a match or a frame (see `frame_independent`). 
+        """
         if not self.summary_:
             self.summary_ = process_timeframe(self.timeline, frames=self.frames, matchid=self.matchid,
                                               creep_score=self.creep_score, porportion=self.porportion)
