@@ -28,7 +28,7 @@ def write_messy_json(dic, file):
     Append a dictionary to a file. The file are organized line-by-line (each dic is a line).
     Arguments:
      - dic: Any dictionary.
-     - dile: String, representing a file name.
+     - file: String, representing a file name.
     """
     with open(file, 'a') as f:
         json.dump(dic, f)
