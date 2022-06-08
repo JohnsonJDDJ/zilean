@@ -35,7 +35,7 @@ class SnapShots:
         self.summary_ = None;
         self.frame_independent_summary_ = None;
 
-    def summary(self, frame_independent=False) -> list:
+    def summary(self, frame_independent=False, verbose=False) -> list:
         """
         Return the summary for all the matches (Riot MatchTimelineDtos). For each match,
         summary statistics of every time frame of interest is computed. The summary is ready
@@ -45,31 +45,42 @@ class SnapShots:
         
         - frame_independent: Boolean. If False (default), each match (Riot MatchTimelineDto) is
         one dictionary. If True, each frame (in minutes) of a match is one dictionary.
+        - verbose: Boolean, default False. If True, print out the progress.
 
         Return:
         
         - A list of dictionaries, ready for further data analysis. Each dictionary is either
         a match or a frame (see `frame_independent`). 
         """
-        if not self.summary_:
-            self.summary_ = process_timeframe(self.timeline, frames=self.frames, matchid=self.matchid,
-                                              creep_score=self.creep_score, porportion=self.porportion)
-        return self.summary_
+        # Load the timelines from source
+        with open(self.timelines) as f:
+            if verbose:
+                print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
+            matches = json.load(f)
 
-    def frame_independent_summary(self) -> list:
-        """
-        Return multiple summaries of statistics, where each summary is only responsible for
-        a single timeframe of interst.
-        """
-        if not self.frame_independent_summary_:
-            result_list = []
-            for frame in self.frames:
-                frame_dic = process_timeframe(self.timeline, frames=[frame], matchid=self.matchid,
-                                              creep_score=self.creep_score, porportion=self.porportion)
-                frame_dic['frame'] = frame
-                result_list += [frame_dic]
-            self.frame_independent_summary_ = result_list
-        return self.frame_independent_summary_
+        # Compute summary_ and frame_independent_summary_ if they are not already cached
+        if (not self.summary_) or (not self.frame_independent_summary_):
+            self.summary_ = []
+            self.frame_independent_summary_ = []
+
+            for match in matches:
+                matchid = match['id']
+                timeline = match['timeline']
+                # Frame dependent summary
+                self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
+                                                    creep_score=self.creep_score, porportion=self.porportion)]
+                # Frame independent summary
+                for frame in self.frames:
+                    frame_dic = process_timeframe(self.timeline, frames=[frame], matchid=self.matchid,
+                                                  creep_score=self.creep_score, porportion=self.porportion)
+                    frame_dic['frame'] = frame
+                    self.frame_independent_summary_ += [frame_dic]
+        
+        # Return the summary based on `frame_independent`
+        if frame_independent:
+            return self.frame_independent_summary_
+        else :
+            return self.summary_
     
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
