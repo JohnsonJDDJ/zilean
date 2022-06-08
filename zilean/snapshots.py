@@ -52,14 +52,15 @@ class SnapShots:
         - A list of dictionaries, ready for further data analysis. Each dictionary is either
         a match or a frame (see `frame_independent`). 
         """
-        # Load the timelines from source
-        with open(self.timelines) as f:
-            if verbose:
-                print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
-            matches = json.load(f)
 
         # Compute summary_ and frame_independent_summary_ if they are not already cached
         if (not self.summary_) or (not self.frame_independent_summary_):
+            # Load the timelines from source
+            with open(self.timelines) as f:
+                if verbose:
+                    print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
+            matches = json.load(f)
+            
             self.summary_ = []
             self.frame_independent_summary_ = []
 
@@ -76,6 +77,7 @@ class SnapShots:
                     frame_dic['frame'] = frame
                     self.frame_independent_summary_ += [frame_dic]
         
+        del matches
         # Return the summary based on `frame_independent`
         if frame_independent:
             return self.frame_independent_summary_
