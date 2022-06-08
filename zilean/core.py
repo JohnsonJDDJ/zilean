@@ -149,10 +149,10 @@ def add_proportion(timeframes):
     """
     Transform original features to 'advanced' features. The transformation include:
 
-    - Total gold -> gold percentage. Gold percentage measures the porportion of gold
+    - Total gold -> gold porportion. Gold porportion measures the porportion of gold
         in this position in relation to the total gold of the whole team. This feature is more
         advance because it considers the total gold of the team.
-    - Xp -> xp percentage. Xp percentage measures the porportion of xp in this 
+    - Xp -> xp porportion. Xp porportion measures the porportion of xp in this 
         position in relation to the total xp of the whole team. This feature is more
         advance because it considers the total xp of the team.
     
@@ -163,7 +163,7 @@ def add_proportion(timeframes):
     
     Return:
     
-    - `timeframe` with proportions computed.
+    - `timeframe` with porportions computed.
     """
     if type(timeframes) is not dict:
         raise TypeError("Input timeframes must be a dictionary")
@@ -183,17 +183,17 @@ def add_proportion(timeframes):
         # Compute porportions
         for index, player in enumerate(player_list):
             if index < 5:
-                player["goldProportion"] =  player["totalGold"] / blue_gold
-                player["xpProportion"] =  player["xp"] / blue_xp
+                player["goldPorportion"] =  player["totalGold"] / blue_gold
+                player["xpPorportion"] =  player["xp"] / blue_xp
             else:
-                player["goldProportion"] =  player["totalGold"] / red_gold
-                player["xpProportion"] =  player["xp"] / red_xp
+                player["goldPorportion"] =  player["totalGold"] / red_gold
+                player["xpPorportion"] =  player["xp"] / red_xp
 
     return timeframes
 
 
 
-def process_timeframe(timeline, frames=[8], matchid=None):
+def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porportion=True):
     """
     Return a single dictionary with cleaned and processed data for a specific frame of a
     Riot MatchTimelineDto.
@@ -207,6 +207,9 @@ def process_timeframe(timeline, frames=[8], matchid=None):
     - frames: A list of integer representing the frames of interest. The function does not handle cases where
       element of `frames` is larger than the total number of frames of `timeline`.
     - matchid: The unique matchid corresponding to `timeline`.
+    - creep_score: Boolean. If True (recommended), then compute the creep score for the players, then
+      drop the `minionKilled` and `jungleMinionKilled` feature of the players.
+    - porportion: Boolean. If True, then add `goldPorportion` and `xpPorportion` as features to the players.
 
     Return:
 
@@ -215,7 +218,10 @@ def process_timeframe(timeline, frames=[8], matchid=None):
     """
     win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
     cleaned = clean_timeframe(timeline, frames)
-    cleaned = add_creep_score(cleaned)
+    if creep_score:
+        cleaned = add_creep_score(cleaned)
+    if porportion:
+        cleaned = add_proportion(cleaned)
     final_dict = {}
     if len(frames) == 1:
         frame = frames[0]
