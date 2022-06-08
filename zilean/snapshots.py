@@ -9,22 +9,28 @@ class SnapShots:
         self.matchid = matchid
         self.frames = frames
         self.win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
+        self.summary_ = None;
+        self.frame_independent_summary_ = None;
 
     def summary(self) -> dict:
         """Return summary statistics of all the timeframes of interest as one dictionary."""
-        return process_timeframe(self.timeline, self.frames, self.matchid)
+        if not self.summary_:
+            self.summary_ = process_timeframe(self.timeline, self.frames, self.matchid)
+        return self.summary_
 
     def frame_independent_summary(self) -> list:
         """
         Return multiple summaries of statistics, where each summary is only responsible for
         a single timeframe of interst.
         """
-        result_list = []
-        for frame in self.frames:
-            frame_dic = process_timeframe(self.timeline, [frame], self.matchid)
-            frame_dic['frame'] = frame
-            result_list += [frame_dic]
-        return result_list
+        if not self.frame_independent_summary_:
+            result_list = []
+            for frame in self.frames:
+                frame_dic = process_timeframe(self.timeline, [frame], self.matchid)
+                frame_dic['frame'] = frame
+                result_list += [frame_dic]
+            self.frame_independent_summary_ = result_list
+        return self.frame_independent_summary_
     
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
