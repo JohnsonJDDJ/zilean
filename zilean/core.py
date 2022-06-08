@@ -7,11 +7,15 @@ from tqdm.notebook import tqdm
 def read_api_key(api_key=None):
     """
     Fetch the Riot Development API key.
+
     Keyword arguments:
-     - api_key: A string representing the api Key. If None (default), it will try to read the
-        file `apikey` in the current directory.
+
+    - api_key: A string representing the api Key. If None (default), it will try to read the
+      file `apikey` in the current directory.
+
     Return:
-     - String, the api_key.
+
+    - String, the api_key.
     """
     if not api_key:
         if not os.path.exists('apikey'):
@@ -26,9 +30,11 @@ def read_api_key(api_key=None):
 def write_messy_json(dic, file):
     """
     Append a dictionary to a file. The file are organized line-by-line (each dic is a line).
+
     Arguments:
-     - dic: Any dictionary.
-     - file: String, representing a file name.
+
+    - dic: Any dictionary.
+    - file: String, representing a file name.
     """
     with open(file, 'a') as f:
         json.dump(dic, f)
@@ -38,8 +44,10 @@ def write_messy_json(dic, file):
 def clean_json(file):
     """
     Clean a messy file into a propoer dictionary and rewrite the file as proper JSON.
+
     Arguments:
-     - file: messy file produced by write_messy_json(dic, file).
+
+    - file: messy file produced by write_messy_json(dic, file).
     """
     with open(file, 'r') as f:
         large_dic = []
@@ -53,10 +61,14 @@ def json_data_mask(dic):
     """
     Construct a list of keys that have dictionary as their corresponding value pair. The list
     acts as a mask for further cleaning.
+
     Arguments:
-     - dic: Any dictionary.
+
+    - dic: Any dictionary.
+
     Return:
-     - List. Containing keys of `dic` which have dictionary as value. 
+
+    - List. Containing keys of `dic` which have dictionary as value. 
     """
     keys_to_remove = []
     for k,v in dic.items():
@@ -68,13 +80,19 @@ def json_data_mask(dic):
 def clean_timeframe(timeline, frames=[8]):
     """
     Clean unwanted features of a specific frame from a Riot MatchTimelineDto and fetch player data. 
+
     Arguments:
-     - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+
+    - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+
     Keyword arguments:
-     - frames: A list of integers representing the frames of interest. The function does not handle cases where
+
+    - frames: A list of integers representing the frames of interest. The function does not handle cases where
         element of `frames` is larger than the total number of frames of `timeline`.
+
     Return:
-     - Dictionary of list of dictionaries. Each nested dictionary represent a player at one `frame` of `timeline`
+
+    - Dictionary of list of dictionaries. Each nested dictionary represent a player at one `frame` of `timeline`
     """
     players_mega_dict = {}
     for frame in frames:
@@ -97,12 +115,17 @@ def clean_timeframe(timeline, frames=[8]):
 
 def add_creep_score(timeframes):
     """
-    Compute and append the creep score as a feature for a specific timeframe.
+    Compute and append the creep score as a feature for a specific timeframe. The creep
+    score is the amount of minion/jungle minions killed by a player.
+
     Arguments:
-     - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
-        timeframe of interest.
+
+    - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
+      timeframe of interest.
+    
     Return:
-     - `timeframe` with creep score computed.
+
+    - `timeframe` with creep score computed.
     """
     if type(timeframes) is not dict:
         raise TypeError("Input timeframes must be a dictionary")
@@ -122,19 +145,73 @@ def add_creep_score(timeframes):
     return timeframes
 
 
+def add_proportion(timeframes):
+    """
+    Transform original features to 'advanced' features. The transformation include:
+
+    - Total gold -> gold percentage. Gold percentage measures the porportion of gold
+        in this position in relation to the total gold of the whole team. This feature is more
+        advance because it considers the total gold of the team.
+    - Xp -> xp percentage. Xp percentage measures the porportion of xp in this 
+        position in relation to the total xp of the whole team. This feature is more
+        advance because it considers the total xp of the team.
+    
+    Arguments:
+
+    - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
+      timeframe of interest.
+    
+    Return:
+    
+    - `timeframe` with proportions computed.
+    """
+    if type(timeframes) is not dict:
+        raise TypeError("Input timeframes must be a dictionary")
+
+    for frame, player_list in timeframes.items():
+        # Calculate total gold and xp for the team
+        blue_gold, blue_xp, red_gold, red_xp = 0, 0, 0, 0
+        for index, player in enumerate(player_list):
+            if 'totalGold' not in player.keys() or 'xp' not in player.keys():
+                raise ValueError("Missing crucial information to construct proportion stats for a player.")
+            if index < 5:
+                blue_gold += player["totalGold"]
+                blue_xp += player["xp"]
+            else:
+                red_gold += player["totalGold"]
+                red_xp += player["xp"]
+        # Compute porportions
+        for index, player in enumerate(player_list):
+            if index < 5:
+                player["goldProportion"] =  player["totalGold"] / blue_gold
+                player["xpProportion"] =  player["xp"] / blue_xp
+            else:
+                player["goldProportion"] =  player["totalGold"] / red_gold
+                player["xpProportion"] =  player["xp"] / red_xp
+
+    return timeframes
+
+
+
 def process_timeframe(timeline, frames=[8], matchid=None):
     """
     Return a single dictionary with cleaned and processed data for a specific frame of a
     Riot MatchTimelineDto.
+
     Arguments:
-     - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+
+    - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+
     Keyword arguments:
-     - frames: A list of integer representing the frames of interest. The function does not handle cases where
-        element of `frames` is larger than the total number of frames of `timeline`.
-     - matchid: The unique matchid corresponding to `timeline`.
+
+    - frames: A list of integer representing the frames of interest. The function does not handle cases where
+      element of `frames` is larger than the total number of frames of `timeline`.
+    - matchid: The unique matchid corresponding to `timeline`.
+
     Return:
-     - Dictionary containing cleaned and processed data for each frame in `frames` in `timeline`. 
-        Ready for further data analysis.
+
+    - Dictionary containing cleaned and processed data for each frame in `frames` in `timeline`. 
+      Ready for further data analysis.
     """
     win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
     cleaned = clean_timeframe(timeline, frames)
