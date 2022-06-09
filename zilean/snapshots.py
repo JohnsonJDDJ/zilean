@@ -1,4 +1,5 @@
 from riotwatcher import LolWatcher
+import pandas as pd
 
 from .core import *
 
@@ -90,6 +91,20 @@ class SnapShots:
         else :
             return self.summary_
 
+
+    def to_disk(self) -> None:
+        """Save the summaries to disk as csv files using pandas.DataFrame.to_csv()"""
+        if not self.summary_ or not self.per_frame_summary_:
+            raise ValueError("Summary statistics are yet to be computed. Please run `summary()` first.")
+
+        path = "data/"
+        file_name = '_'.join(str(e) for e in self.frames)
+
+        pd.DataFrame(self.summary_).to_csv(path+"match_"+file_name+".csv")
+        pd.DataFrame(self.per_frame_summary_).to_csv(path+"frame_"+file_name+".csv")
+
+        print(f"Saved files to direcotry {path}.")
+    
 
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
