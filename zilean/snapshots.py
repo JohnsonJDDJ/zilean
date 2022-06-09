@@ -2,6 +2,7 @@ from riotwatcher import LolWatcher
 
 from .core import *
 
+
 class SnapShots:
     """
     SnapShots is used for extracting interesting player data from Riot `MatchTimelineDto`s.
@@ -34,6 +35,7 @@ class SnapShots:
         self.porportion = porportion
         self.summary_ = None;
         self.frame_independent_summary_ = None;
+
 
     def summary(self, frame_independent=False, verbose=False) -> list:
         """
@@ -76,24 +78,25 @@ class SnapShots:
                                                     creep_score=self.creep_score, porportion=self.porportion)]
                 # Frame independent summary
                 for frame in self.frames:
-                    frame_dic = process_timeframe(self.timeline, frames=[frame], matchid=self.matchid,
+                    frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
                                                   creep_score=self.creep_score, porportion=self.porportion)
                     frame_dic['frame'] = frame
                     self.frame_independent_summary_ += [frame_dic]
-        
-        del matches
+            del matches
 
         # Return the summary based on `frame_independent`
         if frame_independent:
             return self.frame_independent_summary_
         else :
             return self.summary_
-    
+
+
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
         key = read_api_key(api_key)
         self.watcher = LolWatcher(api_key=key)
         return self.watcher
+
 
     def fetch_match_info(self, region) -> dict:
         """
