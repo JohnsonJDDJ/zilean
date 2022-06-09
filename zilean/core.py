@@ -1,8 +1,11 @@
-from inspect import FrameInfo
 import os
 import json
 from tqdm.notebook import tqdm
+from .snapshots import SnapShots
 
+# =================
+# == Basic Utils == 
+# =================
 
 def read_api_key(api_key=None):
     """
@@ -25,7 +28,6 @@ def read_api_key(api_key=None):
                 return f.read()
     else:
         return api_key
-
 
 def write_messy_json(dic, file):
     """
@@ -56,6 +58,9 @@ def clean_json(file):
     with open(file, 'w') as f:  
         json.dump(large_dic, f)
 
+# =====================
+# == Data Processing == 
+# =====================
 
 def json_data_mask(dic):
     """
@@ -83,7 +88,7 @@ def clean_timeframe(timeline, frames=[8]):
 
     Arguments:
 
-    - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+    - timeline: A Riot `MatchTimelineDto`. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
 
     Keyword arguments:
 
@@ -195,12 +200,12 @@ def add_proportion(timeframes):
 
 def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porportion=True):
     """
-    Return a single dictionary with cleaned and processed data for a specific frame of a
+    Return a single dictionary with cleaned and processed data for specific frames of a
     Riot MatchTimelineDto.
 
     Arguments:
 
-    - timeline: A Riot MatchTimelineDto. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+    - timeline: A Riot `MatchTimelineDto`. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
 
     Keyword arguments:
 
@@ -236,3 +241,14 @@ def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porp
     final_dict['matchId'] = matchid if matchid else 'UNKNOWN'
     final_dict['win'] = bool(win)
     return final_dict
+
+# ===================
+# == Data Analysis == 
+# ===================
+
+def make_data(source, frames=[8], to_disk=True, frame_independent=False):
+    """"""
+    # Load cleaned matches
+    with open(source) as f:
+        matches = json.load(f)
+    

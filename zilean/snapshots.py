@@ -59,8 +59,12 @@ class SnapShots:
             with open(self.timelines) as f:
                 if verbose:
                     print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
-            matches = json.load(f)
-            
+                matches = json.load(f)
+                if verbose:
+                    print(f"There is in total {len(matches)} matches successfully loaded.")
+
+            if verbose:
+                    print(f"Unpacking matches into dictionaries.")
             self.summary_ = []
             self.frame_independent_summary_ = []
 
@@ -78,6 +82,7 @@ class SnapShots:
                     self.frame_independent_summary_ += [frame_dic]
         
         del matches
+
         # Return the summary based on `frame_independent`
         if frame_independent:
             return self.frame_independent_summary_
