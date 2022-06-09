@@ -15,6 +15,7 @@ Here is a quick look of how to do data analysis with `zilean`
 ```python
 import zilean
 from zilean.snapshots import SnapShots
+import pandas as pd
 
 # Before any analysis, you need to have data!
 # You can checkout the data I crawled by following the Zenodo link.
@@ -35,8 +36,13 @@ pd.DataFrame(sum_stat)
 # We can have one frame of each match per row (thus different frames 
 # from the same match will be independent from other).
 sum_stat_per_frame = snaps.summary(per_frame=True)
-pd.DataFrame(sum_stat_per_frame)    
+df = pd.DataFrame(sum_stat_per_frame) 
+
+# Look at the distribution of totalGold for `player 0`
+sns.displot(x="totalGold_0", data=df)
 ```
+
+![demo_1.png](demo_1.png)
 
 ## Data
 
