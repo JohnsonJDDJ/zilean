@@ -34,10 +34,10 @@ class SnapShots:
         self.creep_score = creep_score
         self.porportion = porportion
         self.summary_ = None;
-        self.frame_independent_summary_ = None;
+        self.per_frame_summary_ = None;
 
 
-    def summary(self, frame_independent=False, verbose=False) -> list:
+    def summary(self, per_frame=False, verbose=False) -> list:
         """
         Return the summary for all the matches (Riot MatchTimelineDtos). For each match,
         summary statistics of every time frame of interest is computed. The summary is ready
@@ -45,18 +45,18 @@ class SnapShots:
 
         Keyword Arguments:
         
-        - frame_independent: Boolean. If False (default), each match (Riot MatchTimelineDto) is
+        - per_frame: Boolean. If False (default), each match (Riot MatchTimelineDto) is
         one dictionary. If True, each frame (in minutes) of a match is one dictionary.
         - verbose: Boolean, default False. If True, print out the progress.
 
         Return:
         
         - A list of dictionaries, ready for further data analysis. Each dictionary is either
-        a match or a frame (see `frame_independent`). 
+        a match or a frame (see `per_frame`). 
         """
 
-        # Compute summary_ and frame_independent_summary_ if they are not already cached
-        if (not self.summary_) or (not self.frame_independent_summary_):
+        # Compute summary_ and per_frame_summary_ if they are not already cached
+        if (not self.summary_) or (not self.per_frame_summary_):
             # Load the timelines from source
             with open(self.timelines) as f:
                 if verbose:
@@ -68,25 +68,25 @@ class SnapShots:
             if verbose:
                     print(f"Unpacking matches into dictionaries.")
             self.summary_ = []
-            self.frame_independent_summary_ = []
+            self.per_frame_summary_ = []
 
             for match in matches:
                 matchid = match['id']
                 timeline = match['timeline']
-                # Frame dependent summary
+                # Match summary
                 self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
                                                     creep_score=self.creep_score, porportion=self.porportion)]
-                # Frame independent summary
+                # Per frame summary
                 for frame in self.frames:
                     frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
                                                   creep_score=self.creep_score, porportion=self.porportion)
                     frame_dic['frame'] = frame
-                    self.frame_independent_summary_ += [frame_dic]
+                    self.per_frame_summary_ += [frame_dic]
             del matches
 
-        # Return the summary based on `frame_independent`
-        if frame_independent:
-            return self.frame_independent_summary_
+        # Return the summary based on `per_frame`
+        if per_frame:
+            return self.per_frame_summary_
         else :
             return self.summary_
 
