@@ -1,7 +1,6 @@
 import os
 import json
 from tqdm.notebook import tqdm
-from .snapshots import SnapShots
 
 # =================
 # == Basic Utils == 
@@ -245,10 +244,4 @@ def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porp
 # ===================
 # == Data Analysis == 
 # ===================
-
-def make_data(source, frames=[8], to_disk=True, frame_independent=False):
-    """"""
-    # Load cleaned matches
-    with open(source) as f:
-        matches = json.load(f)
     
