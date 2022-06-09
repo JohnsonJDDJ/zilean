@@ -38,11 +38,31 @@ pd.DataFrame(sum_stat)
 sum_stat_per_frame = snaps.summary(per_frame=True)
 df = pd.DataFrame(sum_stat_per_frame) 
 
-# Look at the distribution of totalGold for `player 0`
-sns.displot(x="totalGold_0", data=df)
+# Look at the distribution of totalGold difference for `player 0` (TOP player)
+# at 8 minutes mark.
+
+sns.displot(x="totalGold_0", data=data[data['frame'] == 8])
 ```
 
 ![demo_1.png](demo_1.png)
+
+```python
+# Save the DataFrames to disk
+snaps.to_disk()
+
+# Do some simple modelling
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassidier
+
+train, test = train_test_split(sum_stat_per_frame, test_size=0.33)
+X_train = train.drop(["matchId", "win"], axis=1)
+y_train = train["win"].astype(int)
+
+rf = RandomForestClassidier()
+rf.fit(X_train, y_train)
+y_fitted = rf.predict(X_train)
+print(f"Training accuracy: {mean(y_train == y_fitted)}")
+```
 
 ## Data
 
