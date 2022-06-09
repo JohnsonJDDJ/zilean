@@ -46,19 +46,27 @@ sns.displot(x="totalGold_0", data=data[data['frame'] == 8])
 
 ![demo_1.png](demo_1.png)
 
+We can save both DataFrames to disk so we don't need to load and unpack the `MatchTimelineDto`s everytime.
+
 ```python
 # Save the DataFrames to disk
 snaps.to_disk()
+```
 
+Here is an example of some quick modelling.
+
+```python
 # Do some simple modelling
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassidier
+from sklearn.ensemble import RandomForestClassifier
 
+# Define X and y for training data
 train, test = train_test_split(sum_stat_per_frame, test_size=0.33)
 X_train = train.drop(["matchId", "win"], axis=1)
 y_train = train["win"].astype(int)
 
-rf = RandomForestClassidier()
+# Build a default random forest classifier
+rf = RandomForestClassifier()
 rf.fit(X_train, y_train)
 y_fitted = rf.predict(X_train)
 print(f"Training accuracy: {mean(y_train == y_fitted)}")
