@@ -12,7 +12,7 @@ Zilean is a data analysis project with an accompanying python package. The proje
 
 Here is a quick look of how to do data analysis with `zilean`
 
-```{python}
+```python
 import zilean
 from zilean.snapshots import SnapShots
 
