@@ -23,8 +23,8 @@ import pandas as pd
 # the MatchTimelineDto.
 
 # Create our SnapShots object.
-# We will look at the player statistics at 8 and 12 minute mark.
-snaps = SnapShots("data/matches_cleaned.json", frames=[8, 12])
+# We will look at the player statistics at 10 and 15 minute mark.
+snaps = SnapShots("data/matches_cleaned.json", frames=[10, 15])
 
 # View summary statistics using pandas DataFrame
 sum_stat = snaps.summary()
@@ -39,9 +39,9 @@ sum_stat_per_frame = snaps.summary(per_frame=True)
 df = pd.DataFrame(sum_stat_per_frame) 
 
 # Look at the distribution of totalGold difference for `player 0` (TOP player)
-# at 8 minutes mark.
+# at 15 minutes mark.
 
-sns.displot(x="totalGold_0", data=data[data['frame'] == 8])
+sns.displot(x="totalGold_0", data=data[data['frame'] == 15], hue="win")
 ```
 
 ![demo_1.png](demo_1.png)
