@@ -4,16 +4,14 @@
 
 This projects aims to predict [League of Legends](https://www.leagueoflegends.com) 5v5 Ranked Solo match results using snapshots of game stats before the 16 minute mark
 
-Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match.
+> _Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match._
 
-The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything!
+**The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything!**
 
 Contact: Johnson Du <johnsondzh@gmail.com>
 
-[Introduction](#Introduction)
-
-[Demo](#Demo)
-
+[Introduction](#Introduction)\
+[Demo](#Demo)\
 [Data](#Data)
 
 ## Introduction
