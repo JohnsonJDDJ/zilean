@@ -4,13 +4,23 @@
 
 This projects aims to predict [League of Legends](https://www.leagueoflegends.com) 5v5 Ranked Solo match results using snapshots of game stats before the 16 minute mark
 
-Zilean is a League of Legends character that can drift through past, present and future. We are borrowing Zilean's temporal magic to foresee the result of a match.
+Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match.
+
+The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything!
+
+Contact: Johnson Du <johnsondzh@gmail.com>
+
+[Introduction](#Introduction)
+
+[Demo](#Demo)
+
+[Data](#Data)
 
 ## Introduction
 
 Zilean is a data analysis project with an accompanying python package. **The project aims to reach high accuracy predicting the outcome of a League of Legends _5v5 Ranked Solo high elo match in KR server_**. From the prediciton, draw insights on the factors that have significant impacts on the result of a match.
 
-Different from traditional sports, esports such as League of Legends has an innate advantage of collecting data from matches. Since every play was conducted digitally, it opened up a huge potential to explore and perform all kinds of data analysis. In this project, not only is it aimed at reaching high accuracy and drawing insights to the factors impacting the result of a match. **'zilean' wishes to create a tool that can ficilitate the process of communicating with the Riot API and perform data analytical techniques** on League of Legends matches related data. 
+Different from traditional sports, esports such as League of Legends has an innate advantage of collecting data from matches. Since every play was conducted digitally, it opened up a huge potential to explore and perform all kinds of data analysis. In this project, not only is it aimed at reaching high accuracy and drawing insights to the factors impacting the result of a match. **`zilean` wishes to create a tool that can ficilitate the process of communicating with the Riot API and perform data analytical techniques** on League of Legends matches related data. 
 
 ## Demo
 
