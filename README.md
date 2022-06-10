@@ -8,9 +8,13 @@ Zilean is a League of Legends character that can drift through past, present and
 
 ## Introduction
 
-Zilean is a data analysis project with an accompanying python package. The project aims to reach high accuracy prediciting the outcome of a League of Legends 5v5 Ranked Solo high elo match in KR server. From the prediciton, draw insights on the factors that have significant impacts on the result of a match.
+Zilean is a data analysis project with an accompanying python package. **The project aims to reach high accuracy predicting the outcome of a League of Legends _5v5 Ranked Solo high elo match in KR server_**. From the prediciton, draw insights on the factors that have significant impacts on the result of a match.
 
-Here is a quick look of how to do data analysis with `zilean`
+Different from traditional sports, esports such as League of Legends has an innate advantage of collecting data from matches. Since every play was conducted digitally, it opened up a huge potential to explore and perform all kinds of data analysis. In this project, not only is it aimed at reaching high accuracy and drawing insights to the factors impacting the result of a match. **'zilean' wishes to create a tool that can ficilitate the process of communicating with the Riot API and perform data analytical techniques** on League of Legends matches related data. 
+
+## Demo
+
+Here is a quick look of how to do League of Legends data analysis with `zilean`
 
 ```python
 import zilean
