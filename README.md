@@ -25,7 +25,6 @@ Different from traditional sports, esports such as League of Legends has an inna
 Here is a quick look of how to do League of Legends data analysis with `zilean`
 
 ```python
-import zilean
 from zilean.snapshots import SnapShots
 import pandas as pd
 
