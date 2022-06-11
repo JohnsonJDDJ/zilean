@@ -28,7 +28,8 @@ class SnapShots:
 
     Keyword Arguments:
     
-    - frames: List of integers, indicating the frames (in minutes) of interest. Default [8].
+    - frames: List of integers, indicating the frames (in minutes) of interest. Default [8]. This
+      argument does nothing if the specified input `timelines` file is a stored summary file in csv. 
     - creep_score: Boolean. If True (recommended), then compute the creep score for the players, then
       drop the `minionKilled` and `jungleMinionKilled` feature of the players.
     - porportion: Boolean. If True, then add `goldPorportion` and `xpPorportion` as features to the players.
