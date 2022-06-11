@@ -143,13 +143,15 @@ class SnapShots:
             raise ValueError("You must specify per_frame to either `True` or `False`.")
 
         full_summary = self.per_frame_summary_ if per_frame else self.summary_
-        str_convert = {"TOP":0, "JUG":1, "MID":2, "BOT":3, "SUP":4}
+        str_convert = {"TOP":"0", "JUG":"1", "MID":"2", "BOT":"3", "SUP":"4"}
         keys_to_extract = []
 
         for lane in lanes:
-            # Convert `lanes` to all int
-            if type(lane) is str:
+            # Convert `lanes` to all number strings
+            if lane in str_convert.keys():
                 lane = str_convert[lane]
+            elif type(lane) is int:
+                lane = str(lane)
             # Add corresponding key for the lane to `keys_to_extract`
             keys_to_extract += [key for key in full_summary[0].keys() if int(re.findall(r'\w+_([0-4])', key)[0]) == lane]
         keys_to_extract += ["matchId", "win"]
