@@ -153,8 +153,9 @@ class SnapShots:
             elif type(lane) is int:
                 lane = str(lane)
             # Add corresponding key for the lane to `keys_to_extract`
-            keys_to_extract += [key for key in full_summary[0].keys() if int(re.findall(r'\w+_([0-4])', key)[0]) == lane]
+            keys_to_extract += [key for key in full_summary[0].keys() if re.findall(r'\w+_([0-4])', key) == [lane]]
         keys_to_extract += ["matchId", "win"]
+        keys_to_extract += ["frame"] if per_frame else None
 
         # Construct slice of summary using `keys_to_extract`
         summary_slice = []
