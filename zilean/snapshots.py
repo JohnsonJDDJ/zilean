@@ -98,6 +98,35 @@ class SnapShots:
         print(f"Saved files to direcotry {path}.")
     
 
+    def get_lane(self, lanes, per_frame=None) -> list:
+        """
+        Return the statistics of a specific lane in the game. Statistics of a specific lane in the summary
+        is marked by an underscore and a number at the end of each feature. For example, `totalGold_0`
+        represents the total gold difference of the TOP lane. 
+
+        Arguments:
+
+        - lane: List. Position options are any of {"TOP", "JUG", "MID", "BOT", "SUP"} or their
+          corresponding index {0, 1, 2, 3, 4}. 
+
+        Keyword Arguments:
+
+        - per_frame: Boolean, default None. 
+
+        Return:
+
+        - A list of dictionaries including the statistics for the lanes of interest, the matchid,
+          and the label (`win`).
+        """
+        keys_to_extract = []
+        # Convert `lanes` to all int
+        str_convert = {"TOP":0, "JUG":1, "MID":2, "BOT":3, "SUP":4}
+        for lane in lanes:
+            if type(lane) is str:
+                lane= str_convert[lane]
+            
+            
+
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
         key = read_api_key(api_key)
