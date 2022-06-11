@@ -17,11 +17,14 @@ class SnapShots:
 
     Arguments:
 
-    - timelines: String, a file name where the source data are stored. The source data should
-      be a list of dictionaries, where each dictionary represent one unique match. The
-      dictionaries will have two keys: 
-      - `id`: String, to indicate the unique match id of the match.
-      - `timeline`: a Riot `MatchTimelineDto`.
+    - timelines: String, a file name where either the source data (json) are stored or the computed 
+      summary statistics (csv) is stored. 
+      - The source data (json) should be a list of dictionaries, where each dictionary represent one 
+        unique match. The dictionaries will have two keys: 
+        1. `id`: String, to indicate the unique match id of the match.
+        2. `timeline`: a Riot `MatchTimelineDto`.
+      - The computed summary statistics (csv) should be an earlier saved DataFrame using
+        the SnapShots.to_disk() method.
 
     Keyword Arguments:
     
@@ -40,30 +43,43 @@ class SnapShots:
         self.summary_ = []
         self.per_frame_summary_ = []
 
-        # Compute summary_ and per_frame_summary_ 
-        # Load the timelines from source
-        with open(self.timelines) as f:
+        # Detect the file type of timelines
+        filetype = timelines.split(".")[-1]
+
+        if filetype == "json":
+            # Compute summary_ and per_frame_summary_ 
+            # Load the timelines from source
+            with open(self.timelines) as f:
+                if verbose:
+                    print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
+                matches = json.load(f)
+                if verbose:
+                    print(f"There is in total {len(matches)} matches successfully loaded.")
+            # Unpack file into dictionaries
             if verbose:
-                print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
-            matches = json.load(f)
-            if verbose:
-                print(f"There is in total {len(matches)} matches successfully loaded.")
-        # Unpack file into dictionaries
-        if verbose:
-            print(f"Unpacking matches into dictionaries.")
-        for match in matches:
-            matchid = match['id']
-            timeline = match['timeline']
-            # Per match summary
-            self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
-                                                creep_score=self.creep_score, porportion=self.porportion)]
-            # Per frame summary
-            for frame in self.frames:
-                frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
-                                                creep_score=self.creep_score, porportion=self.porportion)
-                frame_dic['frame'] = frame
-                self.per_frame_summary_ += [frame_dic]
-        del matches
+                print(f"Unpacking matches into dictionaries.")
+            for match in matches:
+                matchid = match['id']
+                timeline = match['timeline']
+                # Per match summary
+                self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
+                                                    creep_score=self.creep_score, porportion=self.porportion)]
+                # Per frame summary
+                for frame in self.frames:
+                    frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
+                                                    creep_score=self.creep_score, porportion=self.porportion)
+                    frame_dic['frame'] = frame
+                    self.per_frame_summary_ += [frame_dic]
+            del matches
+        
+        elif filetype == "csv":
+            per_match_file = timelines.replace("frame", "match")
+            per_frame_file = timelines.replace("match", "frame")
+            self.summary_ = pd.read_csv(per_match_file, index_col=[0]).to_dict("records")
+            self.per_frame_summary_ = pd.read_csv(per_frame_file, index_col=[0]).to_dict("records")
+        
+        else:
+            raise ValueError("Input file name string ends in neither `csv` nor `json`.")
 
 
     def summary(self, per_frame=False) -> list:
