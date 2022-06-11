@@ -3,6 +3,8 @@ import pandas as pd
 
 from .core import *
 
+import re
+
 
 class SnapShots:
     """
@@ -98,11 +100,12 @@ class SnapShots:
         print(f"Saved files to direcotry {path}.")
     
 
-    def get_lane(self, lanes, per_frame=None) -> list:
+    def get_lanes(self, lanes, per_frame=None) -> list:
         """
-        Return the statistics of a specific lane in the game. Statistics of a specific lane in the summary
-        is marked by an underscore and a number at the end of each feature. For example, `totalGold_0`
-        represents the total gold difference of the TOP lane. 
+        Return a slice of the summery statistics that represents specific lanes in the game. 
+        Statistics of a specific lane in the summary is marked by an underscore and a number 
+        at the end of each feature. For example, `totalGold_0` represents the total gold difference 
+        of the TOP lane. 
 
         Arguments:
 
@@ -111,21 +114,36 @@ class SnapShots:
 
         Keyword Arguments:
 
-        - per_frame: Boolean, default None. 
+        - per_frame: Boolean, default None. If False, each match (Riot MatchTimelineDto) is
+        one dictionary. If True, each frame (in minutes) of a match is one dictionary.
 
         Return:
 
         - A list of dictionaries including the statistics for the lanes of interest, the matchid,
           and the label (`win`).
         """
-        keys_to_extract = []
-        # Convert `lanes` to all int
+        if (per_frame is None) or (type(per_frame) is not bool):
+            raise ValueError("You must specify per_frame to either `True` or `False`.")
+
+        full_summary = self.per_frame_summary_ if per_frame else self.summary_
         str_convert = {"TOP":0, "JUG":1, "MID":2, "BOT":3, "SUP":4}
+        keys_to_extract = []
+
         for lane in lanes:
+            # Convert `lanes` to all int
             if type(lane) is str:
-                lane= str_convert[lane]
-            
-            
+                lane = str_convert[lane]
+            # Add corresponding key for the lane to `keys_to_extract`
+            keys_to_extract += [key for key in full_summary[0].keys() if int(re.findall(r'\w+_([0-4])', key)[0]) == lane]
+        keys_to_extract += ["matchId", "win"]
+
+        # Construct slice of summary using `keys_to_extract`
+        summary_slice = []
+        for row in full_summary:
+            summary_slice += [{key: row[key] for key in keys_to_extract}]
+        
+        return summary_slice
+                   
 
     def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
         """Fetch LolWatcher with API key"""
