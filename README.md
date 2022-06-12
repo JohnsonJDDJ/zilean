@@ -25,7 +25,7 @@ Different from traditional sports, esports such as League of Legends has an inna
 Here is a quick look of how to do League of Legends data analysis with `zilean`
 
 ```python
-from zilean.snapshots import SnapShots
+from zilean import SnapShots
 import pandas as pd
 
 # Before any analysis, you need to have data!
@@ -47,7 +47,7 @@ pd.DataFrame(sum_stat)
 # We can have one frame of each match per row (thus different frames 
 # from the same match will be independent from other).
 sum_stat_per_frame = snaps.summary(per_frame=True)
-df = pd.DataFrame(sum_stat_per_frame) 
+data = pd.DataFrame(sum_stat_per_frame) 
 
 # Look at the distribution of totalGold difference for `player 0` (TOP player)
 # at 15 minutes mark.
