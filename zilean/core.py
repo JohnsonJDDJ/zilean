@@ -1,6 +1,6 @@
 import os
 import json
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # =================
 # == Basic Utils == 
