@@ -1,4 +1,3 @@
-from riotwatcher import LolWatcher
 import pandas as pd
 
 from .core import *
@@ -164,20 +163,3 @@ class SnapShots:
             summary_slice += [{key: row[key] for key in keys_to_extract}]
         
         return summary_slice
-                   
-
-    def fetch_lolwatcher(self, api_key=None) -> LolWatcher:
-        """Fetch LolWatcher with API key"""
-        key = read_api_key(api_key)
-        self.watcher = LolWatcher(api_key=key)
-        return self.watcher
-
-
-    def fetch_match_info(self, region) -> dict:
-        """
-        Fetch the corresponding match info (Riot MatchDto) through lolwatcher.
-        You must have the LolWatcher object fetched before hand.
-        """
-        if not self.watcher:
-            raise NameError("LolWatcher does not exist. Please connect with Riot API with `.fetch_lolwatcher()` with your api key")
-        return self.watcher.match.by_id(region, self.matchid)
