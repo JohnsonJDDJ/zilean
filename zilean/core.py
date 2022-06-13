@@ -12,8 +12,8 @@ def read_api_key(api_key=None):
 
     Keyword arguments:
 
-    - api_key: A string representing the api Key. If None (default), it will try to read the
-      file `apikey` in the current directory.
+    - api_key: A string representing the api Key. If None (default), 
+      it will try to read the file `apikey` in the current directory.
 
     Return:
 
@@ -30,7 +30,8 @@ def read_api_key(api_key=None):
 
 def write_messy_json(dic, file):
     """
-    Append a dictionary to a file. The file are organized line-by-line (each dic is a line).
+    Append a dictionary to a file. The file are organized line-by-line 
+    (each dic is a line).
 
     Arguments:
 
@@ -44,7 +45,8 @@ def write_messy_json(dic, file):
 
 def clean_json(file, cutoff=16):
     """
-    Clean a messy file into a propoer dictionary and rewrite the file as proper JSON.
+    Clean a messy file into a propoer dictionary and rewrite the file
+    as proper JSON.
 
     Arguments:
 
@@ -56,10 +58,12 @@ def clean_json(file, cutoff=16):
         for i, line in enumerate(tqdm(f)):
             match = json.loads(line)
             frame_interval = match['info']['frameInterval']
-            if len(match['info']['frames']) < int(cutoff * 60000 / frame_interval):
+            total_frame_num = len(match['info']['frames'])
+            if total_frame_num < int(cutoff*60000/frame_interval):
                 continue;
             matches += [match]
-    print(f"There are in total {len(matches)} crawled KR high elo matches longer than {cutoff} minutes.")
+    print(f"There are in total {len(matches)} crawled KR high elo matches \
+            longer than {cutoff} minutes.")
     with open(file, 'w') as f:  
         json.dump(matches, f)
 
@@ -69,8 +73,8 @@ def clean_json(file, cutoff=16):
 
 def json_data_mask(dic):
     """
-    Construct a list of keys that have dictionary as their corresponding value pair. The list
-    acts as a mask for further cleaning.
+    Construct a list of keys that have dictionary as their corresponding
+    value pair. The list acts as a mask for further cleaning.
 
     Arguments:
 
@@ -89,29 +93,36 @@ def json_data_mask(dic):
 
 def clean_timeframe(timeline, frames=[8]):
     """
-    Clean unwanted features of a specific frame from a Riot MatchTimelineDto and fetch player data. 
+    Clean unwanted features of a specific frame from a `Riot MatchTimelineDto`
+    and fetch player data. 
 
     Arguments:
 
-    - timeline: A Riot `MatchTimelineDto`. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+    - timeline: A Riot `MatchTimelineDto`. More info at 
+    (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
 
     Keyword arguments:
 
-    - frames: A list of integers representing the frames of interest. The function does not handle cases where
-        element of `frames` is larger than the total number of frames of `timeline`.
+    - frames: A list of integers representing the frames of interest. 
+      The function does not handle cases where element of `frames` is larger
+      than the total number of frames of `timeline`.
 
     Return:
 
-    - Dictionary of list of dictionaries. Each nested dictionary represent a player at one `frame` of `timeline`
+    - Dictionary of list of dictionaries. Each nested dictionary represent
+      a player at one `frame` of `timeline`
     """
     players_mega_dict = {}
     for frame in frames:
-        players_mega_dict[str(frame)] = list(timeline['info']['frames'][frame]['participantFrames'].values())
+        players_mega_dict[str(frame)] = list(timeline['info']['frames'][frame]
+                                             ['participantFrames'].values())
     keys_to_remove = json_data_mask(players_mega_dict[str(frames[0])][0])
     keys_to_remove += ['currentGold', 'goldPerSecond', 'participantId', 
-                       'magicDamageDone', 'magicDamageDoneToChampions', 'magicDamageTaken',
-                       'physicalDamageDone', 'physicalDamageDoneToChampions', 'physicalDamageTaken',
-                       'trueDamageDone', 'trueDamageDoneToChampions', 'trueDamageTaken']
+                       'magicDamageDone', 'magicDamageDoneToChampions', 
+                       'magicDamageTaken', 'physicalDamageDone', 
+                       'physicalDamageDoneToChampions', 'physicalDamageTaken',
+                       'trueDamageDone', 'trueDamageDoneToChampions', 
+                       'trueDamageTaken']
     for frame, player_list in players_mega_dict.items():
         for player in player_list:
             if 'damageStats' in player.keys():
@@ -125,13 +136,14 @@ def clean_timeframe(timeline, frames=[8]):
 
 def add_creep_score(timeframes):
     """
-    Compute and append the creep score as a feature for a specific timeframe. The creep
-    score is the amount of minion/jungle minions killed by a player.
+    Compute and append the creep score as a feature for a specific
+    timeframe. The creep score is the amount of minion/jungle minions
+    killed by a player.
 
     Arguments:
 
-    - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
-      timeframe of interest.
+    - timeframe: A Dictionary of list of dictionaries. Each nested
+      dictionary represent a player at each timeframe of interest.
     
     Return:
 
@@ -140,10 +152,10 @@ def add_creep_score(timeframes):
     if type(timeframes) is not dict:
         raise TypeError("Input timeframes must be a dictionary")
     
-    for frame, player_list in timeframes.items():
+    for _, player_list in timeframes.items():
         for player in player_list:
             if 'jungleMinionsKilled' in player.keys() and 'minionsKilled' in player.keys():
-                player['creepScore'] = player['jungleMinionsKilled'] +player['minionsKilled']
+                player['creepScore'] = player['jungleMinionsKilled'] + player['minionsKilled']
                 player.pop('jungleMinionsKilled')
                 player.pop('minionsKilled')
             elif 'jungleMinionsKilled' not in player.keys() and 'minionsKilled' not in player.keys():
@@ -157,19 +169,21 @@ def add_creep_score(timeframes):
 
 def add_proportion(timeframes):
     """
-    Transform original features to 'advanced' features. The transformation include:
+    Transform original features to proportions, which include:
 
-    - Total gold -> gold porportion. Gold porportion measures the porportion of gold
-        in this position in relation to the total gold of the whole team. This feature is more
-        advance because it considers the total gold of the team.
-    - Xp -> xp porportion. Xp porportion measures the porportion of xp in this 
-        position in relation to the total xp of the whole team. This feature is more
-        advance because it considers the total xp of the team.
+    - Total gold -> gold porportion. Gold porportion measures the 
+      porportion of gold in this position in relation to the total
+      gold of the whole team. This feature is more advance because
+      it considers the total gold of the team.
+    - Xp -> xp porportion. Xp porportion measures the porportion
+      of xp in this position in relation to the total xp of the whole
+      team. This feature is more advance because it considers the total
+      xp of the team.
     
     Arguments:
 
-    - timeframe: A Dictionary of list of dictionaries. Each nested dictionary represent a player at each 
-      timeframe of interest.
+    - timeframe: A Dictionary of list of dictionaries. Each nested
+      dictionary represent a player at each timeframe of interest.
     
     Return:
     
@@ -183,7 +197,8 @@ def add_proportion(timeframes):
         blue_gold, blue_xp, red_gold, red_xp = 0, 0, 0, 0
         for index, player in enumerate(player_list):
             if 'totalGold' not in player.keys() or 'xp' not in player.keys():
-                raise ValueError("Missing crucial information to construct proportion stats for a player.")
+                raise ValueError("Missing crucial information to construct \
+                                  proportion stats for a player.")
             if index < 5:
                 blue_gold += player["totalGold"]
                 blue_xp += player["xp"]
@@ -203,28 +218,33 @@ def add_proportion(timeframes):
 
 
 
-def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porportion=True):
+def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, 
+                      porportion=True):
     """
-    Return a single dictionary with cleaned and processed data for specific frames of a
-    Riot MatchTimelineDto.
+    Return a single dictionary with cleaned and processed data for
+    specific frames of a `Riot MatchTimelineDto`.
 
     Arguments:
 
-    - timeline: A Riot `MatchTimelineDto`. More info at (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
+    - timeline: A Riot `MatchTimelineDto`. More info at 
+      (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
 
     Keyword arguments:
 
-    - frames: A list of integer representing the frames of interest. The function does not handle cases where
-      element of `frames` is larger than the total number of frames of `timeline`.
+    - frames: A list of integer representing the frames of interest. 
+      The function does not handle cases where element of `frames` is larger 
+      than the total number of frames of `timeline`.
     - matchid: The unique matchid corresponding to `timeline`.
-    - creep_score: Boolean. If True (recommended), then compute the creep score for the players, then
-      drop the `minionKilled` and `jungleMinionKilled` feature of the players.
-    - porportion: Boolean. If True, then add `goldPorportion` and `xpPorportion` as features to the players.
+    - creep_score: Boolean. If True (recommended), then compute the creep 
+      score for the players, then drop the `minionKilled` and 
+      `jungleMinionKilled` feature of the players.
+    - porportion: Boolean. If True, then add `goldPorportion` and 
+      `xpPorportion` as features to the players.
 
     Return:
 
-    - Dictionary containing cleaned and processed data for each frame in `frames` in `timeline`. 
-      Ready for further data analysis.
+    - Dictionary containing cleaned and processed data for each frame
+      in `frames` in `timeline`. Ready for further data analysis.
     """
     win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
     cleaned = clean_timeframe(timeline, frames)
@@ -237,12 +257,16 @@ def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True, porp
         frame = frames[0]
         for i in range(5):
             for key in list(cleaned[str(frame)][0].keys()):
-                final_dict[key+'_'+str(i)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
+                key_name = key+'_'+str(i)
+                final_dict[key_name] = (cleaned[str(frame)][i][key] 
+                                        - cleaned[str(frame)][i+5][key])
     else:
         for frame in frames:
             for i in range(5):
                 for key in list(cleaned[str(frame)][0].keys()):
-                    final_dict[key+'_'+str(i)+'_frame'+str(frame)] = cleaned[str(frame)][i][key] - cleaned[str(frame)][i+5][key]
+                    key_name = key+'_'+str(i)+'_frame'+str(frame)
+                    final_dict[key_name] = (cleaned[str(frame)][i][key]
+                                            - cleaned[str(frame)][i+5][key])
     final_dict['matchId'] = matchid if matchid else 'UNKNOWN'
     final_dict['win'] = bool(win)
     return final_dict
