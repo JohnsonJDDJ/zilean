@@ -55,8 +55,8 @@ def clean_json(file, cutoff=16):
         matches = []
         for i, line in enumerate(tqdm(f)):
             match = json.loads(line)
-            frame_interval = match['timeline']['info']['frameInterval']
-            if len(match['timeline']['info']['frames']) < int(cutoff * 60000 / frame_interval):
+            frame_interval = match['info']['frameInterval']
+            if len(match['info']['frames']) < int(cutoff * 60000 / frame_interval):
                 continue;
             matches += [match]
     print(f"There are in total {len(matches)} crawled KR high elo matches longer than {cutoff} minutes.")
