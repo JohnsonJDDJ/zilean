@@ -43,43 +43,67 @@ class SnapShots:
         self.summary_ = []
         self.per_frame_summary_ = []
 
-        # Detect the file type of timelines
-        filetype = timelines.split(".")[-1]
-
-        if filetype == "json":
-            # Compute summary_ and per_frame_summary_ 
-            # Load the timelines from source
-            with open(self.timelines) as f:
-                if verbose:
-                    print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
-                matches = json.load(f)
-                if verbose:
-                    print(f"There is in total {len(matches)} matches successfully loaded.")
-            # Unpack file into dictionaries
-            if verbose:
-                print(f"Unpacking matches into dictionaries.")
-            for match in matches:
-                matchid = match['id']
-                timeline = match['timeline']
-                # Per match summary
-                self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
-                                                    creep_score=self.creep_score, porportion=self.porportion)]
-                # Per frame summary
-                for frame in self.frames:
-                    frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
-                                                    creep_score=self.creep_score, porportion=self.porportion)
-                    frame_dic['frame'] = frame
-                    self.per_frame_summary_ += [frame_dic]
-            del matches
+        if type(timelines) == dict:
+            # Verify if its a MatchTimelineDto
+            is_valid = False
+            matchid = None
+            if "metadata" in timelines.keys():
+                if "matchId" in timelines["metadata"].keys():
+                    matchid = timelines["metadata"]["matchId"]
+            if "info" in timelines.keys():
+                if "frames" in timelines["info"].keys():
+                    if type(timelines["info"]["frames"]) == list:
+                        is_valid = True
+            if not is_valid:
+                raise ValueError("The input dictionary is not a valid MatchTimelineDto")
+            
+            self.summary_ = [process_timeframe(timelines, frames=self.frames, matchid=matchid,
+                                               creep_score=self.creep_score, porportion=self.porportion)]
+            self.per_frame_summary_ = []
+            for frame in self.frames:
+                frame_dic = process_timeframe(timelines, frames=[frame], matchid=matchid,
+                                              creep_score=self.creep_score, porportion=self.porportion)
+                frame_dic['frame'] = frame
+                self.per_frame_summary_ += [frame_dic]
         
-        elif filetype == "csv":
-            per_match_file = timelines.replace("frame", "match")
-            per_frame_file = timelines.replace("match", "frame")
-            self.summary_ = pd.read_csv(per_match_file, index_col=[0]).to_dict("records")
-            self.per_frame_summary_ = pd.read_csv(per_frame_file, index_col=[0]).to_dict("records")
+        elif type(timelines) == str:
+            # Detect the file type of timelines
+            filetype = timelines.split(".")[-1]
+            
+            if filetype == "json":
+                # Compute summary_ and per_frame_summary_ 
+                # Load the timelines from source
+                with open(self.timelines) as f:
+                    if verbose:
+                        print(f"Loading file {self.timelines}. It might take >5 min if file is large.")
+                    matches = json.load(f)
+                    if verbose:
+                        print(f"There is in total {len(matches)} matches successfully loaded.")
+                # Unpack file into dictionaries
+                if verbose:
+                    print(f"Unpacking matches into dictionaries.")
+                for match in matches:
+                    matchid = match['id']
+                    timeline = match['timeline']
+                    # Per match summary
+                    self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
+                                                        creep_score=self.creep_score, porportion=self.porportion)]
+                    # Per frame summary
+                    for frame in self.frames:
+                        frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
+                                                        creep_score=self.creep_score, porportion=self.porportion)
+                        frame_dic['frame'] = frame
+                        self.per_frame_summary_ += [frame_dic]
+                del matches
+            
+            elif filetype == "csv":
+                per_match_file = timelines.replace("frame", "match")
+                per_frame_file = timelines.replace("match", "frame")
+                self.summary_ = pd.read_csv(per_match_file, index_col=[0]).to_dict("records")
+                self.per_frame_summary_ = pd.read_csv(per_frame_file, index_col=[0]).to_dict("records")
         
         else:
-            raise ValueError("Input file name string ends in neither `csv` nor `json`.")
+            raise ValueError("Input is neither a valid file name (csv of json), nor is a valid MatchTimelineDto")
 
 
     def summary(self, per_frame=False) -> list:
