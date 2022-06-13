@@ -42,20 +42,26 @@ def write_messy_json(dic, file):
         f.write('\n')
 
 
-def clean_json(file):
+def clean_json(file, cutoff=16):
     """
     Clean a messy file into a propoer dictionary and rewrite the file as proper JSON.
 
     Arguments:
 
-    - file: messy file produced by write_messy_json(dic, file).
+    - file: String. Messy file produced by write_messy_json(dic, file).
+    - cutoff: Integer. Represents the minimum minutes a match must have.
     """
     with open(file, 'r') as f:
-        large_dic = []
+        matches = []
         for i, line in enumerate(tqdm(f)):
-            large_dic += [json.loads(line)]
+            match = json.loads(line)
+            frame_interval = match['timeline']['info']['frameInterval']
+            if len(match['timeline']['info']['frames']) < int(cutoff * 60000 / frame_interval):
+                continue;
+            matches += [match]
+    print(f"There are in total {len(matches)} crawled KR high elo matches longer than {cutoff} minutes.")
     with open(file, 'w') as f:  
-        json.dump(large_dic, f)
+        json.dump(matches, f)
 
 # =====================
 # == Data Processing == 
