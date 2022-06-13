@@ -69,7 +69,7 @@ class SnapShots:
         elif type(timelines) == str:
             # Detect the file type of timelines
             filetype = timelines.split(".")[-1]
-            
+
             if filetype == "json":
                 # Compute summary_ and per_frame_summary_ 
                 # Load the timelines from source
@@ -83,14 +83,13 @@ class SnapShots:
                 if verbose:
                     print(f"Unpacking matches into dictionaries.")
                 for match in matches:
-                    matchid = match['id']
-                    timeline = match['timeline']
+                    matchid = match['metadata']['matchId']
                     # Per match summary
-                    self.summary_ += [process_timeframe(timeline, frames=self.frames, matchid=matchid,
+                    self.summary_ += [process_timeframe(match, frames=self.frames, matchid=matchid,
                                                         creep_score=self.creep_score, porportion=self.porportion)]
                     # Per frame summary
                     for frame in self.frames:
-                        frame_dic = process_timeframe(timeline, frames=[frame], matchid=matchid,
+                        frame_dic = process_timeframe(match, frames=[frame], matchid=matchid,
                                                         creep_score=self.creep_score, porportion=self.porportion)
                         frame_dic['frame'] = frame
                         self.per_frame_summary_ += [frame_dic]
