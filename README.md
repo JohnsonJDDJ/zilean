@@ -35,7 +35,7 @@ import pandas as pd
 
 # Create our SnapShots object.
 # We will look at the player statistics at 10 and 15 minute mark.
-snaps = SnapShots("data/matches_cleaned.json", frames=[10, 15])
+snaps = SnapShots("data/matches.json", frames=[10, 15])
 
 # View summary statistics using pandas DataFrame
 sum_stat = snaps.summary()

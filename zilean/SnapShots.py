@@ -29,7 +29,7 @@ class SnapShots:
         DataFrame using the SnapShots.to_disk() method.
 
     Keyword Arguments:
-    
+
     - frames: List of integers, indicating the frames (in minutes) of
       interest. Default [8]. This argument does nothing if the specified
       input `timelines` file is a stored summary file in csv. 
@@ -42,7 +42,7 @@ class SnapShots:
       of loading the source data.
     """
 
-    def __init__(self, timelines, frames=[8], creep_score=True, porportion=True, 
+    def __init__(self, timelines, frames=[8], creep_score=True, porportion=True,
                  verbose=False) -> None:
         self.timelines = timelines
         self.frames = frames
@@ -63,27 +63,28 @@ class SnapShots:
                     if type(timelines["info"]["frames"]) == list:
                         is_valid = True
             if not is_valid:
-                raise ValueError("The input dictionary is not a valid MatchTimelineDto")
-            
-            self.summary_ = [process_timeframe(timelines, frames=self.frames, 
-                                               matchid=matchid, 
+                raise ValueError(
+                    "The input dictionary is not a valid MatchTimelineDto")
+
+            self.summary_ = [process_timeframe(timelines, frames=self.frames,
+                                               matchid=matchid,
                                                creep_score=self.creep_score,
                                                porportion=self.porportion)]
             self.per_frame_summary_ = []
             for frame in self.frames:
-                frame_dic = process_timeframe(timelines, frames=[frame], 
+                frame_dic = process_timeframe(timelines, frames=[frame],
                                               matchid=matchid,
-                                              creep_score=self.creep_score, 
+                                              creep_score=self.creep_score,
                                               porportion=self.porportion)
                 frame_dic['frame'] = frame
                 self.per_frame_summary_ += [frame_dic]
-        
+
         elif type(timelines) == str:
             # Detect the file type of timelines
             filetype = timelines.split(".")[-1]
 
             if filetype == "json":
-                # Compute summary_ and per_frame_summary_ 
+                # Compute summary_ and per_frame_summary_
                 # Load the timelines from source
                 with open(self.timelines) as f:
                     if verbose:
@@ -101,30 +102,29 @@ class SnapShots:
                     # Per match summary
                     self.summary_ += [process_timeframe(match, frames=self.frames,
                                                         matchid=matchid,
-                                                        creep_score=self.creep_score, 
+                                                        creep_score=self.creep_score,
                                                         porportion=self.porportion)]
                     # Per frame summary
                     for frame in self.frames:
-                        frame_dic = process_timeframe(match, frames=[frame], 
+                        frame_dic = process_timeframe(match, frames=[frame],
                                                       matchid=matchid,
-                                                      creep_score=self.creep_score, 
+                                                      creep_score=self.creep_score,
                                                       porportion=self.porportion)
                         frame_dic['frame'] = frame
                         self.per_frame_summary_ += [frame_dic]
                 del matches
-            
+
             elif filetype == "csv":
                 per_match_file = timelines.replace("frame", "match")
                 per_frame_file = timelines.replace("match", "frame")
                 self.summary_ = pd.read_csv(per_match_file, index_col=[0])\
-                                .to_dict("records")
+                    .to_dict("records")
                 self.per_frame_summary_ = pd.read_csv(per_frame_file, index_col=[0])\
-                                          .to_dict("records")
-        
+                    .to_dict("records")
+
         else:
             raise ValueError("Input is neither a valid file name (csv of json), \
                               nor is a valid MatchTimelineDto")
-
 
     def summary(self, per_frame=False) -> list:
         """
@@ -133,33 +133,39 @@ class SnapShots:
         is returned. The summary is ready for further data analysis.
 
         Keyword Arguments:
-        
+
         - per_frame: Boolean. If False (default), each match
           (Riot MatchTimelineDto) is one dictionary. If True, each frame
           (in minutes) of a match is one dictionary.
 
         Return:
-        
+
         - A list of dictionaries, ready for further data analysis. Each 
           dictionary is either a match or a frame (see `per_frame`). 
         """
         # Return the summary based on `per_frame`
         if per_frame:
             return self.per_frame_summary_
-        else :
+        else:
             return self.summary_
 
+    def to_disk(self, path="data/", verbose=True) -> None:
+        """
+        Save the summaries to disk as csv files using pandas.DataFrame.to_csv()
 
-    def to_disk(self) -> None:
-        """Save the summaries to disk as csv files using pandas.DataFrame.to_csv()"""
-        path = "data/"
+        Keyword Arguments:
+
+        - path: String. Default `data/`, relative to your working directory.
+        - verbose: Boolean. Default True, so you can see where your files
+          are saved to. False to turn off.
+        """
         file_name = '_'.join(str(e) for e in self.frames)
-
-        pd.DataFrame(self.summary_).to_csv(path+"match_"+file_name+".csv")
-        pd.DataFrame(self.per_frame_summary_).to_csv(path+"frame_"+file_name+".csv")
-
-        print(f"Saved files to direcotry {path}.")
-    
+        per_match_path = os.path.join(path, "match_"+file_name+".csv")
+        per_frame_path = os.path.join(path, "frame_"+file_name+".csv")
+        pd.DataFrame(self.summary_).to_csv(per_match_path)
+        pd.DataFrame(self.per_frame_summary_).to_csv(per_frame_path)
+        if verbose:
+            print(f"Saved files to direcotry {os.path.join(os.getcwd(), path)}.")
 
     def get_lanes(self, lanes, per_frame=None) -> list:
         """
@@ -186,10 +192,12 @@ class SnapShots:
           of interest, the matchid, and the label (`win`).
         """
         if (per_frame is None) or (type(per_frame) is not bool):
-            raise ValueError("You must specify per_frame to either `True` or `False`.")
+            raise ValueError(
+                "You must specify per_frame to either `True` or `False`.")
 
         full_summary = self.per_frame_summary_ if per_frame else self.summary_
-        str_convert = {"TOP":"0", "JUG":"1", "MID":"2", "BOT":"3", "SUP":"4"}
+        str_convert = {"TOP": "0", "JUG": "1",
+                       "MID": "2", "BOT": "3", "SUP": "4"}
         keys_to_extract = []
 
         for lane in lanes:
@@ -199,7 +207,7 @@ class SnapShots:
             elif type(lane) is int:
                 lane = str(lane)
             # Add corresponding key for the lane to `keys_to_extract`
-            keys_to_extract += [key for key in full_summary[0].keys() if \
+            keys_to_extract += [key for key in full_summary[0].keys() if
                                 re.findall(r'\w+_([0-4])', key) == [lane]]
         keys_to_extract += ["matchId", "win"]
         if per_frame:
@@ -209,5 +217,5 @@ class SnapShots:
         summary_slice = []
         for row in full_summary:
             summary_slice += [{key: row[key] for key in keys_to_extract}]
-        
+
         return summary_slice
