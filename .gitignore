@@ -1,7 +1,8 @@
 # For development
 example*
 exploration.ipynb
-notes.md
+notes_ml.md
+notes_pkg.md
 
 # Large data files
 data/*
