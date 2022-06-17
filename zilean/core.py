@@ -66,8 +66,8 @@ def clean_json(file, cutoff=16) -> list:
             if total_frame_num < int(cutoff*60000/frame_interval):
                 continue;
             matches += [match]
-    print(f"There are in total {len(matches)} crawled KR high elo matches \
-            longer than {cutoff} minutes.")
+    print(f"There are in total {len(matches)} crawled KR high elo matches " +
+          f"longer than {cutoff} minutes.")
     with open(file, 'w') as f:  
         json.dump(matches, f)
     return matches
@@ -202,8 +202,8 @@ def add_proportion(timeframes):
         blue_gold, blue_xp, red_gold, red_xp = 0, 0, 0, 0
         for index, player in enumerate(player_list):
             if 'totalGold' not in player.keys() or 'xp' not in player.keys():
-                raise ValueError("Missing crucial information to construct \
-                                  proportion stats for a player.")
+                raise ValueError("Missing crucial information to construct " +
+                                 "proportion stats for a player.")
             if index < 5:
                 blue_gold += player["totalGold"]
                 blue_xp += player["xp"]
