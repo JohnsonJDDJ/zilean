@@ -21,7 +21,7 @@ def test_load_dict():
 
 def test_load_json():
     """Load an example file with Riot `MatchTimelineDto`"""
-    SnapShots(example_file)
+    SnapShots(example_file, verbose=True)
 
 
 def test_to_disk_and_load():
@@ -31,7 +31,7 @@ def test_to_disk_and_load():
     """
     # To disk
     snaps_1 = SnapShots(example_file)
-    snaps_1.to_disk(path=__location__, verbose=False)
+    snaps_1.to_disk(path=__location__, verbose=True)
     # Load both files
     match_file = os.path.join(__location__, "match_8.csv")
     frame_file = os.path.join(__location__, "frame_8.csv")
