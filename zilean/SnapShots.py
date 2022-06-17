@@ -18,15 +18,13 @@ class SnapShots:
 
     Arguments:
 
-    - timelines: String, a file name where either the source data (json)
-      are stored or the computed summary statistics (csv) is stored. 
-      - The source data (json) should be a list of dictionaries, where
-        each dictionary represent one unique match. The dictionaries
-        will have two keys: 
-        1. `id`: String, to indicate the unique match id of the match.
-        2. `timeline`: a Riot `MatchTimelineDto`.
-      - The computed summary statistics (csv) should be an earlier saved
+    - timelines: The source data. It can be either a: 
+      - String, a file name where either a list of `MatchTimelineDto`s 
+        (in JSON format) or the computed summary statistics (csv) is 
+        stored.  The computed summary statistics (csv) should be an earlier saved
         DataFrame using the SnapShots.to_disk() method.
+      - List. A list of `MatchTimelineDto`s.
+      - Dict. A single `MatchTimelineDto`.
 
     Keyword Arguments:
 
@@ -51,21 +49,10 @@ class SnapShots:
         self.summary_ = []
         self.per_frame_summary_ = []
 
+        # Dict, a single `MatchTimelineDto`
         if type(timelines) == dict:
             # Verify if its a MatchTimelineDto
-            is_valid = False
-            matchid = None
-            if "metadata" in timelines.keys():
-                if "matchId" in timelines["metadata"].keys():
-                    matchid = timelines["metadata"]["matchId"]
-            if "info" in timelines.keys():
-                if "frames" in timelines["info"].keys():
-                    if type(timelines["info"]["frames"]) == list:
-                        is_valid = True
-            if not is_valid:
-                raise ValueError(
-                    "The input dictionary is not a valid MatchTimelineDto")
-
+            matchid = validate_timeline(timelines)
             self.summary_ = [process_timeframe(timelines, frames=self.frames,
                                                matchid=matchid,
                                                creep_score=self.creep_score,
@@ -78,22 +65,39 @@ class SnapShots:
                                               porportion=self.porportion)
                 frame_dic['frame'] = frame
                 self.per_frame_summary_ += [frame_dic]
-
+        # List, multiple `MatchTimelineDto`s
+        elif type(timelines) == list:
+            for match in timelines:
+                matchid = validate_timeline(match)
+                # Per match summary
+                self.summary_ += [process_timeframe(match, frames=self.frames,
+                                                    matchid=matchid,
+                                                    creep_score=self.creep_score,
+                                                    porportion=self.porportion)]
+                # Per frame summary
+                for frame in self.frames:
+                    frame_dic = process_timeframe(match, frames=[frame],
+                                                  matchid=matchid,
+                                                  creep_score=self.creep_score,
+                                                  porportion=self.porportion)
+                    frame_dic['frame'] = frame
+                    self.per_frame_summary_ += [frame_dic]
+        # String, a file
         elif type(timelines) == str:
-            # Detect the file type of timelines
+            # Detect the file type
             filetype = timelines.split(".")[-1]
-
+            # JSON, a list of `MatchTimelineDto`s
             if filetype == "json":
                 # Compute summary_ and per_frame_summary_
                 # Load the timelines from source
                 with open(self.timelines) as f:
                     if verbose:
-                        print(f"Loading file {self.timelines}. \
-                              It might take >5 min if file is large.")
+                        print(f"Loading file {self.timelines}." +
+                              "It might take >5 min if file is large.")
                     matches = json.load(f)
                     if verbose:
-                        print(f"There is in total {len(matches)} \
-                              matches successfully loaded.")
+                        print(f"There is in total {len(matches)} " +
+                              "matches successfully loaded.")
                 # Unpack file into dictionaries
                 if verbose:
                     print(f"Unpacking matches into dictionaries.")
@@ -113,7 +117,7 @@ class SnapShots:
                         frame_dic['frame'] = frame
                         self.per_frame_summary_ += [frame_dic]
                 del matches
-
+            # CSV, a previously saved summary using to_disk()
             elif filetype == "csv":
                 per_match_file = timelines.replace("frame", "match")
                 per_frame_file = timelines.replace("match", "frame")
@@ -121,10 +125,10 @@ class SnapShots:
                     .to_dict("records")
                 self.per_frame_summary_ = pd.read_csv(per_frame_file, index_col=[0])\
                     .to_dict("records")
-
+        # None of above
         else:
-            raise ValueError("Input is neither a valid file name (csv of json), \
-                              nor is a valid MatchTimelineDto")
+            raise ValueError("Input is neither a valid file name (csv of json), " +
+                             "nor is a valid MatchTimelineDto")
 
     def summary(self, per_frame=False) -> list:
         """

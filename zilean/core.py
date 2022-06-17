@@ -276,7 +276,21 @@ def process_timeframe(timeline, frames=[8], matchid=None, creep_score=True,
     final_dict['win'] = bool(win)
     return final_dict
 
-# ===================
-# == Data Analysis == 
-# ===================
-    
+
+def validate_timeline(timeline):
+    """
+    Check if the given input is a valid `MatchTimelineDto`. Return
+    the match id if it is valid, return `None` oterhwise. 
+    """
+    matchid = None
+    try:
+        # The matchid
+        matchid = timeline["metadata"]["matchId"]
+        # The match result label
+        win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
+        # The participants
+        timeline['info']['frames'][0]['participantFrames'].values()
+        return matchid
+    except:  
+        raise ValueError("The input dictionary is not a valid " +
+                         "MatchTimelineDto")      

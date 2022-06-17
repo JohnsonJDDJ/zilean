@@ -14,6 +14,11 @@ with open(example_file , "r") as example:
 invalid_timeline = {"Nope": 0}
 
 
+def test_load_list():
+    """Load an example Riot `MatchTimelineDto`"""
+    SnapShots(example_timeline)
+
+
 def test_load_dict():
     """Load an example Riot `MatchTimelineDto`"""
     SnapShots(example_timeline[0])
@@ -24,7 +29,7 @@ def test_load_json():
     SnapShots(example_file, verbose=True)
 
 
-def test_to_disk_and_load():
+def test_to_disk_and_load_csv():
     """
     Load an example Riot `MatchTimelineDto`, save to csv using 
     to_disk(), and then load the csv file again.
