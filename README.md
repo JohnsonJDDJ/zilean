@@ -28,7 +28,6 @@ Here is a quick look of how to do League of Legends data analysis with `zilean`
 from zilean import TimelineCrawler, SnapShots, read_api_key
 import pandas as pd
 
-
 # Use the TimelineCrawler to fetch `MatchTimelineDto`s 
 # from Riot. The `MatchTimelineDto`s have game stats 
 # at each minute mark.
@@ -36,10 +35,11 @@ import pandas as pd
 # We need a API key to fetch data. See the Riot Developer
 # Portal for more info.
 api_key = read_api_key(you_api_key_here)
-# Crawl 100 Diamond RANKED_SOLO_5x5 timelines from the Korean server.
+# Crawl 2000 Diamond RANKED_SOLO_5x5 timelines from the Korean server.
 crawler = TimelineCrawler(api_key, region="kr", 
                           tier="DIAMOND", queue="RANKED_SOLO_5x5")
-result = crawler.crawl(100, match_per_id=15, file="results.json")
+result = crawler.crawl(2000, match_per_id=30, file="results.json")
+# This will take a long time!
 
 # We will look at the player statistics at 10 and 15 minute mark.
 snaps = SnapShots(result, frames=[10, 15])
