@@ -43,15 +43,19 @@ def write_messy_json(dic, file):
         f.write('\n')
 
 
-def clean_json(file, cutoff=16):
+def clean_json(file, cutoff=16) -> list:
     """
     Clean a messy file into a propoer dictionary and rewrite the file
-    as proper JSON.
+    as proper JSON. Return the JSON content as a dictionary.
 
     Arguments:
 
     - file: String. Messy file produced by write_messy_json(dic, file).
     - cutoff: Integer. Represents the minimum minutes a match must have.
+
+    Return:
+    
+    - The cleaned JSON content as a dictionary.
     """
     with open(file, 'r') as f:
         matches = []
@@ -66,6 +70,7 @@ def clean_json(file, cutoff=16):
             longer than {cutoff} minutes.")
     with open(file, 'w') as f:  
         json.dump(matches, f)
+    return matches
 
 # =====================
 # == Data Processing == 
