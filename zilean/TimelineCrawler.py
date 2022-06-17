@@ -1,4 +1,4 @@
-from pygments import highlight
+from tqdm import tqdm
 from riotwatcher import LolWatcher
 
 from .core import *
@@ -79,15 +79,37 @@ class TimelineCrawler:
             self.watcher = dummy_watcher
         
 
-    def crawl(self, n:int, match_per_id:int=3, cutoff:int=16, file:str=None,
-              verbose:int=0) -> list:
+    def crawl(self, n:int, match_per_id:int=15, file:str=None, 
+              cutoff:int=16) -> list:
         """
         Crawl `MatchTimelineDto`s and save results to disk as json file.
         Also, return a list of unique `MatchTimelineDto`s.
         Each `MatchTimelineDto` is a dictionary that contains game
         statistics at each minute mark. To perform analysis, feed the
         returned list to a `zilean.SnapShots` object. 
+
+        Arguments:
+
+        - n: Integer. The number of unique matches to be crawled. 
+
+        Keyword Arguments:
+
+        - march_per_id: Integer, default 15. The number of matches to be crawled
+          for each unique account. Recommend to be a minimum of 15. Will handle
+          the case if a player have played for less than the specified number of 
+          matches.
+        - file: String, default None. The name of the file to write the crawled
+          result. 
+        - cutoff: Integer, default 16. The mininum number of minutes required for
+          a match to be counted toward the final list.
+
+        Return:
+
+        - A list of `MatchTimelineDto`s. 
         """
+        # Error checking
+        if os.path.exists(file):
+            raise ValueError(f"File {file} already exist.")
         # For challengers
         if self.tier == "challenger":
             league_entries = self.watcher.league\
@@ -108,7 +130,11 @@ class TimelineCrawler:
             league_entries = self.watcher.league\
                                  .entries(self.region, self.queue,
                                           self.tier, "I")
+        # Record matches that are already visited
         visited_matchIds = set()
+        # Set tqdm progress bar
+        pbar = tqdm(total=n)
+        pbar.set_description("Crawling matches")
         # Iterate over the league entries to fetch summonerIds
         for entry in league_entries:
             summonerId = entry['summonerId']
@@ -126,8 +152,10 @@ class TimelineCrawler:
                 # Save to disk
                 write_messy_json(timeline, file)
                 visited_matchIds.add(matchId)
+                pbar.update(1)
                 if len(visited_matchIds) == n: break
             if len(visited_matchIds) == n: break
+        pbar.close()
         # Clean matches with specified cutoff
-        clean_json(file, cutoff)
+        return clean_json(file, cutoff)
 
