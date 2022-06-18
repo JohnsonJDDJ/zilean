@@ -67,7 +67,7 @@ def clean_json(file, cutoff=16) -> list:
             if total_frame_num < int(cutoff*60000/frame_interval):
                 continue;
             matches += [match]
-    print(f"There are in total {len(matches)} crawled KR high elo matches " +
+    print(f"There are in total {len(matches)} crawled matches " +
           f"longer than {cutoff} minutes.")
     with open(file, 'w') as f:  
         json.dump(matches, f)

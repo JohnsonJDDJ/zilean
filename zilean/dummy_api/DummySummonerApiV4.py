@@ -8,6 +8,6 @@ class DummySummonerApiV4:
     def by_id(self, region, id) -> dict:
         dummy_return = {
             "summonerId": id,
-            "puuid": "dummy"
+            "puuid": id
         }
         return dummy_return
