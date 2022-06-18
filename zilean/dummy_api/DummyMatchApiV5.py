@@ -19,6 +19,7 @@ class DummyMatchApiV5:
                 "matchId": matchId,
             },
             "info": {
+                "frameInterval": 60000,
                 "frames": [
                     {
                         "participantFrames": {

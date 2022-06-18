@@ -1,5 +1,6 @@
 import os
 import json
+from time import time
 from tqdm import tqdm
 
 # =================
@@ -286,8 +287,10 @@ def validate_timeline(timeline):
     try:
         # The matchid
         matchid = timeline["metadata"]["matchId"]
+        # Frame interval
+        timeline['info']['frameInterval']
         # The match result label
-        win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
+        timeline['info']['frames'][-1]['events'][-1]['winningTeam']
         # The participants
         timeline['info']['frames'][0]['participantFrames'].values()
         return matchid

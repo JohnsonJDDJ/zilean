@@ -110,18 +110,24 @@ class TimelineCrawler:
         # Error checking
         if os.path.exists(file):
             raise ValueError(f"File {file} already exist.")
+        if n <= 0:
+            raise ValueError("Invalid number of matched to be crawled.")
+        if match_per_id <= 0:
+            raise ValueError("Invalid number of match per account.")
+        if cutoff <= 0:
+            raise ValueError("Invalid cutoff.")
         # For challengers
-        if self.tier == "challenger":
+        if self.tier == "CHALLENGER":
             league_entries = self.watcher.league\
                               .challenger_by_queue(self.region,
                                                    self.queue)['entries']
         # For grandmasters
-        elif self.tier == "grandmaster":
+        elif self.tier == "GRANDMASTER":
             league_entries = self.watcher.league\
                               .grandmaster_by_queue(self.region,
                                                     self.queue)['entries']
         # For masters
-        elif self.tier == "master":
+        elif self.tier == "MASTER":
             league_entries = self.watcher.league\
                               .masters_by_queue(self.region,
                                                 self.queue)['entries']

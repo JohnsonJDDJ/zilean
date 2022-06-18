@@ -1,5 +1,12 @@
-from zilean import TimelineCrawler
+from zilean import TimelineCrawler, DummyWatcher
 
+import os
+
+# Current file location:
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+crawl_result_file = os.path.join(__location__, "crawl_result.json")
 
 def test_invalid_api_type():
     """Test invalid type for `api_key` keyword argument."""
@@ -62,3 +69,11 @@ def test_invalid_queue_value():
                         tier="GOLD", queue="RANKED_SOLO_5X5")
     except ValueError:
         pass;
+
+def test_crawl():
+    """Generic test for crawl"""
+    crawler = TimelineCrawler(api_key="key", region="na1", 
+                              tier="GOLD", queue="RANKED_SOLO_5x5",
+                              dummy_watcher=DummyWatcher())
+    crawler.crawl(1, file=crawl_result_file)
+    os.remove(crawl_result_file)
