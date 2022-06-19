@@ -8,8 +8,8 @@ class DummyMatchApiV5:
 
     def matchlist_by_puuid(self, region, id) -> list:
         dummy_return = [
-            "dummy_1",
-            "dummy_2"
+            id + "_1",
+            id + "_2"
         ]
         return dummy_return
 

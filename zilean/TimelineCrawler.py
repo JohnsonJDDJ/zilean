@@ -99,7 +99,7 @@ class TimelineCrawler:
           the case if a player have played for less than the specified number of 
           matches.
         - file: String, default None. The name of the file to write the crawled
-          result. 
+          result. If None, then result will not be saved to disk.
         - cutoff: Integer, default 16. The mininum number of minutes required for
           a match to be counted toward the final list.
 
@@ -107,15 +107,21 @@ class TimelineCrawler:
 
         - A list of `MatchTimelineDto`s. 
         """
+        # Define variables
+        to_disk = True if file else False
+        file_path = file if to_disk else ".temp.json"
+
         # Error checking
-        if os.path.exists(file):
-            raise ValueError(f"File {file} already exist.")
+        if os.path.exists(file_path) and to_disk:
+            raise ValueError(f"File {file_path} already exist.")
         if n <= 0:
             raise ValueError("Invalid number of matched to be crawled.")
         if match_per_id <= 0:
             raise ValueError("Invalid number of match per account.")
-        if cutoff <= 0:
+        if cutoff < 0:
             raise ValueError("Invalid cutoff.")
+
+        # Decide the right method
         # For challengers
         if self.tier == "CHALLENGER":
             league_entries = self.watcher.league\
@@ -136,6 +142,8 @@ class TimelineCrawler:
             league_entries = self.watcher.league\
                                  .entries(self.region, self.queue,
                                           self.tier, "I")
+        
+        # Start crawling                                 
         # Record matches that are already visited
         visited_matchIds = set()
         # Set tqdm progress bar
@@ -156,12 +164,17 @@ class TimelineCrawler:
                 timeline = self.watcher.match.timeline_by_match(self.region,
                                                                 matchId)
                 # Save to disk
-                write_messy_json(timeline, file)
+                write_messy_json(timeline, file_path)
                 visited_matchIds.add(matchId)
                 pbar.update(1)
                 if len(visited_matchIds) == n: break
             if len(visited_matchIds) == n: break
         pbar.close()
         # Clean matches with specified cutoff
-        return clean_json(file, cutoff)
+        result = clean_json(file_path, cutoff)
+        
+        # Clean temporary files if to_dick is False
+        if not to_disk:
+            os.remove(file_path)
 
+        return result
