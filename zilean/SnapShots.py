@@ -131,20 +131,20 @@ class SnapShots:
             raise ValueError("Input is neither a valid file name (csv of json), " +
                              "nor is a valid MatchTimelineDto")
 
-        for key in self.summary()[0].keys():
-           info_name = key
-           #Split the name where there is a "_"
-           info_stuff = key.split("_")
-           info_feature = info_stuff[0]
-           info_lane = info_stuff[1]
+        # for key in self.summary()[0].keys():
+        #    info_name = key
+        #    #Split the name where there is a "_"
+        #    info_stuff = key.split("_")
+        #    info_feature = info_stuff[0]
+        #    info_lane = info_stuff[1]
 
-           #Split the last term by the letter "e" so that we can get the number at the end
-           split_frame = info_stuff[2].split("e")
-           info_frame = split_frame[1]
-           new_dict = {"name" : info_name, "feature" : info_feature, "lane" : info_lane, "frame" : info_frame}
+        #    #Split the last term by the letter "e" so that we can get the number at the end
+        #    split_frame = info_stuff[2].split("e")
+        #    info_frame = split_frame[1]
+        #    new_dict = {"name" : info_name, "feature" : info_feature, "lane" : info_lane, "frame" : info_frame}
 
-           #Append the newly created dictionary to self.feature.info
-           self.feature_info_.append(new_dict)
+        #    #Append the newly created dictionary to self.feature.info
+        #    self.feature_info_.append(new_dict)
 
     def summary(self, per_frame=False) -> list:
         """

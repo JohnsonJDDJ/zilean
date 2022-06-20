@@ -108,13 +108,13 @@ def test_crawl_matchId():
     crawler = TimelineCrawler(api_key="key", region="na1", 
                               tier="GOLD", queue="RANKED_SOLO_5x5",
                               dummy_watcher=DummyWatcher())
-    result = crawler.crawl(4, cutoff=0)
-    # There should be only 2 matches
+    result = crawler.crawl(8, cutoff=0)
+    # There should be only 4 matches
     assert type(result) == list
-    assert len(result) == 2
-    # The matchIds should be dummy_1 and dummy_2
-    assert result[0]['metadata']['matchId'] == "GOLD_1"
-    assert result[1]['metadata']['matchId'] == "GOLD_2"
+    assert len(result) == 4
+    # The matchIds should contain the tier
+    assert result[0]['metadata']['matchId'] == "GOLD_1_1"
+    assert result[2]['metadata']['matchId'] == "GOLD_2_1"
 
     # For CHALLENGER
     crawler = TimelineCrawler(api_key="key", region="na1", 
@@ -124,7 +124,7 @@ def test_crawl_matchId():
     # There should be only 1 matches
     assert type(result) == list
     assert len(result) == 1
-    # The matchIds should be dummy_1 and dummy_2
+    # The matchIds should contain the tier
     assert result[0]['metadata']['matchId'] == "CHALLENGER_1"
 
     # For GRANDMASTER

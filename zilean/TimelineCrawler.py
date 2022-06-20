@@ -121,54 +121,66 @@ class TimelineCrawler:
         if cutoff < 0:
             raise ValueError("Invalid cutoff.")
 
-        # Decide the right method
-        # For challengers
-        if self.tier == "CHALLENGER":
-            league_entries = self.watcher.league\
+        # Fetch a set of leagueIds
+        # For highest tiers - LeagueLists
+        if self.tier in ["CHALLENGER", "GRANDMASTER", "MASTER"]: 
+            # For challengers
+            if self.tier == "CHALLENGER":
+                league_list = self.watcher.league\
                               .challenger_by_queue(self.region,
-                                                   self.queue)['entries']
-        # For grandmasters
-        elif self.tier == "GRANDMASTER":
-            league_entries = self.watcher.league\
+                                                   self.queue)               
+            # For grandmasters
+            elif self.tier == "GRANDMASTER":
+                league_list = self.watcher.league\
                               .grandmaster_by_queue(self.region,
-                                                    self.queue)['entries']
-        # For masters
-        elif self.tier == "MASTER":
-            league_entries = self.watcher.league\
+                                                    self.queue)
+            # For masters
+            elif self.tier == "MASTER":
+                league_list = self.watcher.league\
                               .masters_by_queue(self.region,
-                                                self.queue)['entries']
-        # For all others
+                                                self.queue)
+            leagueIds = set([league_list["leagueId"]])
+        # For all others - LeagueEntries
         else:
-            league_entries = self.watcher.league\
+            league_entries_set = self.watcher.league\
                                  .entries(self.region, self.queue,
                                           self.tier, "I")
-        
+            leagueIds = set([entry["leagueId"] for entry in league_entries_set])
+        leagueIds = list(leagueIds)
+        leagueIds.sort() # For testing purposes
+
         # Start crawling                                 
         # Record matches that are already visited
         visited_matchIds = set()
         # Set tqdm progress bar
         pbar = tqdm(total=n)
         pbar.set_description("Crawling matches")
-        # Iterate over the league entries to fetch summonerIds
-        for entry in league_entries:
-            summonerId = entry['summonerId']
-            # Then fetch puuid for that summonerIds
-            puuid = self.watcher.summoner.by_id(self.region, summonerId)["puuid"]
-            #Then fetch a list of matchIds for that puuid
-            match_list = self.watcher.match.matchlist_by_puuid(self.region,
-                                                               puuid)
-            # Lastly fetch MatchTimelines for each matchId
-            for i in range(min(match_per_id, len(match_list))):
-                matchId = match_list[i]
-                if matchId in visited_matchIds: continue
-                timeline = self.watcher.match.timeline_by_match(self.region,
-                                                                matchId)
-                # Save to disk
-                write_messy_json(timeline, file_path)
-                visited_matchIds.add(matchId)
-                pbar.update(1)
+        # Iterate over the leagueIds to fetch leagueEntries
+        for leagueId in leagueIds:
+            entries = self.watcher.league.by_id(self.region, leagueId)['entries']
+            # Then fetch summonerIds for each LeagueEntry
+            for entry in entries:
+                summonerId = entry['summonerId']
+                # Then fetch puuid for that summonerIds
+                puuid = self.watcher.summoner.by_id(self.region, summonerId)["puuid"]
+                #Then fetch a list of matchIds for that puuid
+                match_list = self.watcher.match.matchlist_by_puuid(self.region, puuid)
+                # Lastly fetch MatchTimelines for each matchId
+                for i in range(min(match_per_id, len(match_list))):
+                    matchId = match_list[i]
+                    if matchId in visited_matchIds: continue
+                    timeline = self.watcher.match.timeline_by_match(self.region,
+                                                                    matchId)
+                    # Save to disk
+                    write_messy_json(timeline, file_path)
+                    visited_matchIds.add(matchId)
+                    pbar.update(1)
+                    if len(visited_matchIds) == n: break
                 if len(visited_matchIds) == n: break
             if len(visited_matchIds) == n: break
+        if len(visited_matchIds) < n:
+            print(f"{n} unique matches cannot be met with match_per_id "+
+                  f"= {match_per_id} (currently {len(visited_matchIds)} matches).")
         pbar.close()
         # Clean matches with specified cutoff
         result = clean_json(file_path, cutoff)
