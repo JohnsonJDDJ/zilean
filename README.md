@@ -6,7 +6,7 @@ This projects aims to predict [League of Legends](https://www.leagueoflegends.co
 
 > _Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match._
 
-**The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything! If you are interested, checkout this [TODO list](Welcome.md)!**
+**The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything! If you are interested, contact me!**
 
 Contact: Johnson Du <johnsondzh@gmail.com>
 
