@@ -1,6 +1,6 @@
 # Zilean
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6636849.svg)](https://doi.org/10.5281/zenodo.6636849)
+[![codecov](https://codecov.io/gh/JohnsonJDDJ/zilean/branch/main/graph/badge.svg?token=FF4RCILBK9)](https://codecov.io/gh/JohnsonJDDJ/zilean) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6636849.svg)](https://doi.org/10.5281/zenodo.6636849)
 
 This projects aims to predict [League of Legends](https://www.leagueoflegends.com) 5v5 Ranked Solo match results using snapshots of game stats before the 16 minute mark
 
