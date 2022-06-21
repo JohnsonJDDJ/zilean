@@ -2,4 +2,4 @@ pandas >= 1.4.0
 riotwatcher >= 3.2.0
 tqdm >= 4.64.0
 
-.
+zilean == 0.0.1
