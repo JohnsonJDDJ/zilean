@@ -10,7 +10,7 @@ Welcome to zilean's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   zilean
 
 Indices and tables
 ==================
