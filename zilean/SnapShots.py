@@ -7,7 +7,7 @@ import re
 
 class SnapShots:
     """SnapShots is used for extracting interesting player data from
-    Riot `MatchTimelineDto`s. SnapShots is a helper object that
+    Riot ``MatchTimelineDto`` s. SnapShots is a helper object that
     facilitates data analysis on League of Legends matches.
 
     The reason for the name is because SnapShots can extract player 
@@ -15,7 +15,7 @@ class SnapShots:
     (in minutes). Data at frames of interest can be used to, for 
     example, predict the result of a match.
 
-    Parameters
+    Attributes
     ----------
     timelines : str | list | dict
         The source data. It can be either a: 
@@ -28,15 +28,15 @@ class SnapShots:
     frames : list
         Integers indicating the frames (in minutes) of
         interest. Default [8]. This argument does nothing if the 
-        specified input `timelines` file is a stored summary file
+        specified input ``timelines`` file is a stored summary file
         in csv. 
     creep_score: bool
         Compute the creep score for the players, then drop the
         ``minionKilled`` and ``jungleMinionKilled`` feature of the 
         players. Defaults to True.
     porportion: bool 
-        Add `goldPorportion` and `xpPorportion` as features to the
-        players. Defaults to True.
+        Add ``goldPorportion`` and ``xpPorportion`` as features to 
+        the players. Defaults to True.
     verbose: bool 
         Print out the progress of loading the source data, defaults
         to False.

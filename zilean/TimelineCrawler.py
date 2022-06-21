@@ -4,16 +4,41 @@ from riotwatcher import LolWatcher
 from .core import *
 
 class TimelineCrawler:
-    """
-    An automatic crawler for Riot `MatchTimelineDto`s. The Riot
-     `MatchTimelineDto`s contain stats of a match at each minute mark.
-    The crawler runs `riotwatcher.LolWatcher` under the hood.
+    """An automatic crawler for Riot ``MatchTimelineDto`` s. The Riot
+    ``MatchTimelineDto`` s contain stats of a match at each minute mark.
+    The crawler runs ``riotwatcher.LolWatcher`` under the hood.
 
-    Keyword Arguments:
+    Attributes
+    ----------
+    api_key : str
+        Your Riot API key. You must have a valid API key to access
+        information through the Riot API. Defaults to None.
+    region : str
+        The region of interest, defaults to None.
+    tier : str
+        Tier level of the matches, defaults to None.
+    queue : str
+        The queue type of the matches, defaults to None.
+    dummy_watcher : :class:`DummyWatcher`
+        For testing purpose only, defaults to None.
+    
+    Notes
+    -----
+        The available options for ``region`` are
 
-    - api_key: String. Default None. Your Riot API key. You must have 
-      a valid API key to access information through the Riot API. 
-    - region: String. Deafult None. The region of interest. 
+        >>> ["br1", "eun1", "euw1", "jp1", "kr", "la1", "la2",
+        ...  "na1", "oc1", "ru", "tr1"]
+        
+        The available options for ``tier`` are
+
+        >>> ["CHALLENGER", "GRANDMASTER", "MASTER",
+        ...  "DIAMOND", "PLATINUM", "GOLD", "SILVER",
+        ...  "BRONZE", "IRON"]
+        
+        The available options for ``queue`` are
+
+        >>> ["RANKED_SOLO_5x5", "RANKED_FLEX_SR",
+        ...  "RANKED_FLEX_TT"]
     """
 
     region_options_ = ["br1", 
@@ -81,31 +106,33 @@ class TimelineCrawler:
 
     def crawl(self, n:int, match_per_id:int=15, file:str=None, 
               cutoff:int=16) -> list:
-        """
-        Crawl `MatchTimelineDto`s and save results to disk as json file.
-        Also, return a list of unique `MatchTimelineDto`s.
-        Each `MatchTimelineDto` is a dictionary that contains game
+        """Crawl ``MatchTimelineDto`` s and save results to disk as a
+        json file. Also, return a list of unique ``MatchTimelineDto`` s.
+        Each ``MatchTimelineDto`` is a dictionary that contains game
         statistics at each minute mark. To perform analysis, feed the
-        returned list to a `zilean.SnapShots` object. 
+        returned list to a :class:`zilean.SnapShots` object. 
 
-        Arguments:
+        Parameters
+        ----------
+        n : int
+            The number of unique matches to be crawled. 
+        march_per_id : int
+            The number of matches to be crawled for each unique 
+            account. Recommend to be a minimum of 15. Will handle
+            the case if a player have played for less than the 
+            specified number of matches. Defaults to 15.
+        file : str
+            The name of the file to write the crawled result. 
+            If None, then result will not be saved to disk. Defaults
+            to None.
+        cutoff : int
+            The mininum number of minutes required for a match to 
+            be counted toward the final list. Defaults to 16.
 
-        - n: Integer. The number of unique matches to be crawled. 
-
-        Keyword Arguments:
-
-        - march_per_id: Integer, default 15. The number of matches to be crawled
-          for each unique account. Recommend to be a minimum of 15. Will handle
-          the case if a player have played for less than the specified number of 
-          matches.
-        - file: String, default None. The name of the file to write the crawled
-          result. If None, then result will not be saved to disk.
-        - cutoff: Integer, default 16. The mininum number of minutes required for
-          a match to be counted toward the final list.
-
-        Return:
-
-        - A list of `MatchTimelineDto`s. 
+        Returns
+        -------
+        list
+            A list of ``MatchTimelineDto`` s. 
         """
         # Define variables
         to_disk = True if file else False

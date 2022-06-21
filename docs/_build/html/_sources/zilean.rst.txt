@@ -1,4 +1,4 @@
-zilean.core module
+zilean.core
 ==================
 
 .. automodule:: zilean.core

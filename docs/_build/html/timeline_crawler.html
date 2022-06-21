@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>TimelineCrawler class &#8212; zilean 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" href="_static/css/functions.css" type="text/css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="SnapShots class" href="snapshots.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-zilean.TimelineCrawler">
+<span id="timelinecrawler-class"></span><h1>TimelineCrawler class<a class="headerlink" href="#module-zilean.TimelineCrawler" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zilean.TimelineCrawler.</span></span><span class="sig-name descname"><span class="pre">TimelineCrawler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_watcher</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An automatic crawler for Riot <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> s. The Riot
+<code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> s contain stats of a match at each minute mark.
+The crawler runs <code class="docutils literal notranslate"><span class="pre">riotwatcher.LolWatcher</span></code> under the hood.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.api_key">
+<span class="sig-name descname"><span class="pre">api_key</span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.api_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Your Riot API key. You must have a valid API key to access
+information through the Riot API. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.region">
+<span class="sig-name descname"><span class="pre">region</span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.region" title="Permalink to this definition">¶</a></dt>
+<dd><p>The region of interest, defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.tier">
+<span class="sig-name descname"><span class="pre">tier</span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.tier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tier level of the matches, defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.queue">
+<span class="sig-name descname"><span class="pre">queue</span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>The queue type of the matches, defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.dummy_watcher">
+<span class="sig-name descname"><span class="pre">dummy_watcher</span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.dummy_watcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>For testing purpose only, defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DummyWatcher</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The available options for <code class="docutils literal notranslate"><span class="pre">region</span></code> are</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s2">&quot;br1&quot;</span><span class="p">,</span> <span class="s2">&quot;eun1&quot;</span><span class="p">,</span> <span class="s2">&quot;euw1&quot;</span><span class="p">,</span> <span class="s2">&quot;jp1&quot;</span><span class="p">,</span> <span class="s2">&quot;kr&quot;</span><span class="p">,</span> <span class="s2">&quot;la1&quot;</span><span class="p">,</span> <span class="s2">&quot;la2&quot;</span><span class="p">,</span>
+<span class="gp">... </span> <span class="s2">&quot;na1&quot;</span><span class="p">,</span> <span class="s2">&quot;oc1&quot;</span><span class="p">,</span> <span class="s2">&quot;ru&quot;</span><span class="p">,</span> <span class="s2">&quot;tr1&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The available options for <code class="docutils literal notranslate"><span class="pre">tier</span></code> are</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s2">&quot;CHALLENGER&quot;</span><span class="p">,</span> <span class="s2">&quot;GRANDMASTER&quot;</span><span class="p">,</span> <span class="s2">&quot;MASTER&quot;</span><span class="p">,</span>
+<span class="gp">... </span> <span class="s2">&quot;DIAMOND&quot;</span><span class="p">,</span> <span class="s2">&quot;PLATINUM&quot;</span><span class="p">,</span> <span class="s2">&quot;GOLD&quot;</span><span class="p">,</span> <span class="s2">&quot;SILVER&quot;</span><span class="p">,</span>
+<span class="gp">... </span> <span class="s2">&quot;BRONZE&quot;</span><span class="p">,</span> <span class="s2">&quot;IRON&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The available options for <code class="docutils literal notranslate"><span class="pre">queue</span></code> are</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s2">&quot;RANKED_SOLO_5x5&quot;</span><span class="p">,</span> <span class="s2">&quot;RANKED_FLEX_SR&quot;</span><span class="p">,</span>
+<span class="gp">... </span> <span class="s2">&quot;RANKED_FLEX_TT&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.crawl">
+<span class="sig-name descname"><span class="pre">crawl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_per_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.crawl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crawl <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> s and save results to disk as a
+json file. Also, return a list of unique <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> s.
+Each <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> is a dictionary that contains game
+statistics at each minute mark. To perform analysis, feed the
+returned list to a <a class="reference internal" href="snapshots.html#module-zilean.SnapShots" title="zilean.SnapShots"><code class="xref py py-class docutils literal notranslate"><span class="pre">zilean.SnapShots</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – The number of unique matches to be crawled.</p></li>
+<li><p><strong>march_per_id</strong> (<em>int</em>) – The number of matches to be crawled for each unique
+account. Recommend to be a minimum of 15. Will handle
+the case if a player have played for less than the
+specified number of matches. Defaults to 15.</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – The name of the file to write the crawled result.
+If None, then result will not be saved to disk. Defaults
+to None.</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em>) – The mininum number of minutes required for a match to
+be counted toward the final list. Defaults to 16.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.queue_options_">
+<span class="sig-name descname"><span class="pre">queue_options_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['RANKED_SOLO_5x5',</span> <span class="pre">'RANKED_FLEX_SR',</span> <span class="pre">'RANKED_FLEX_TT']</span></em><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.queue_options_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.region_options_">
+<span class="sig-name descname"><span class="pre">region_options_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['br1',</span> <span class="pre">'eun1',</span> <span class="pre">'euw1',</span> <span class="pre">'jp1',</span> <span class="pre">'kr',</span> <span class="pre">'la1',</span> <span class="pre">'la2',</span> <span class="pre">'na1',</span> <span class="pre">'oc1',</span> <span class="pre">'ru',</span> <span class="pre">'tr1']</span></em><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.region_options_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zilean.TimelineCrawler.TimelineCrawler.tier_options_">
+<span class="sig-name descname"><span class="pre">tier_options_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['CHALLENGER',</span> <span class="pre">'GRANDMASTER',</span> <span class="pre">'MASTER',</span> <span class="pre">'DIAMOND',</span> <span class="pre">'PLATINUM',</span> <span class="pre">'GOLD',</span> <span class="pre">'SILVER',</span> <span class="pre">'BRONZE',</span> <span class="pre">'IRON']</span></em><a class="headerlink" href="#zilean.TimelineCrawler.TimelineCrawler.tier_options_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">zilean</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="zilean.html">zilean.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snapshots.html">SnapShots class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TimelineCrawler class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="snapshots.html" title="previous chapter">SnapShots class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Zhihao (Johnson) Du.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/timeline_crawler.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

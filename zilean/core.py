@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 def read_api_key(api_key:str=None) -> str:
     """Fetch the Riot Development API key. If None provided, it 
-    will try to read the file `apikey` in the working directory.
+    will try to read the file ``apikey`` in the working directory.
 
     Parameters
     ----------
@@ -25,7 +25,7 @@ def read_api_key(api_key:str=None) -> str:
     -----
         This function's main purpose is to hide your api key on
         public resources. You would want to store your api key
-        in a file named `apikey` in the working directory, and 
+        in a file named ``apikey`` in the working directory, and 
         fetch your api key everytime through this function.
     """
     if not api_key:
@@ -37,7 +37,7 @@ def read_api_key(api_key:str=None) -> str:
     else:
         return api_key
 
-def write_messy_json(dic, file) -> None:
+def write_messy_json(dic:dict, file:str) -> None:
     """Append a dictionary to a file. The file are organized
     line-by-line (each dict is a line).
 
@@ -54,7 +54,7 @@ def write_messy_json(dic, file) -> None:
 
 
 def clean_json(file:str, cutoff:int=16) -> list:
-    """Clean a messy JSON file that store `MatchTimelineDto`s.
+    """Clean a messy JSON file that store ``MatchTimelineDto`` s.
     Only retain matches that last longer than a specific cutoff.
 
     Parameters
@@ -112,12 +112,12 @@ def json_data_mask(dic:dict) -> list:
 
 def clean_timeframe(timeline:dict, frames:list=[8]) -> dict:
     """Clean unwanted features of a specific frame from a 
-    `Riot MatchTimelineDto` and fetch player data. 
+    Riot ``MatchTimelineDto`` and fetch player data. 
 
     Parameters
     ----------
     timeline : dict
-        A Riot `MatchTimelineDto`. More info at 
+        A Riot ``MatchTimelineDto``. More info at 
         (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     frames : list
         Integers representing the frames of interest, defaults to [8]. 
@@ -127,13 +127,13 @@ def clean_timeframe(timeline:dict, frames:list=[8]) -> dict:
     dict
         Timeline with cleaned data. It will be a dictionary with
         lists as values. Elememnts of each list value are dictionaries.
-        Each nested dictionary represent a player at one `frame` 
-        of the `timeline`
+        Each nested dictionary represent a player at one ``frame``
+        of the ``timeline``.
 
     Notes
     -----
-        The function does not handle cases where element of `frames`
-        is larger than the total number of frames of the `timeline`.
+        The function does not handle cases where element of ``frames``
+        is larger than the total number of frames of the ``timeline``.
     """
     players_mega_dict = {}
     for frame in frames:
@@ -209,12 +209,12 @@ def add_proportion(timeframes:dict) -> dict:
     timeframes : dict
         A dictionary with lists as values. Elememnts of each list value
         are dictionaries. Each nested dictionary represent a player at
-        one frame of the `timeframes`.
+        one frame of the ``timeframes``.
 
     Returns
     -------
     dict
-        `timeframes` with porportions computed.
+        ``timeframes`` with porportions computed.
     """
     if type(timeframes) is not dict:
         raise TypeError("Input timeframes must be a dictionary")
@@ -247,34 +247,34 @@ def add_proportion(timeframes:dict) -> dict:
 def process_timeframe(timeline:dict, frames:list=[8], matchid:str=None, 
                       creep_score:bool=True, porportion:bool=True) -> dict:
     """Return a single dictionary with cleaned and processed data for
-    specific frames of a `Riot MatchTimelineDto`.
+    specific frames of a Riot ``MatchTimelineDto``.
 
     Parameters
     ----------
     timeline : dict
-        A Riot `MatchTimelineDto`. More info at 
+        A Riot ``MatchTimelineDto``. More info at 
         (https://developer.riotgames.com/apis#match-v5/GET_getTimeline)
     frames : list 
         Integers representing the frames of interest, defaults to [8].
     matchid : :obj:`str`, optional
-        The unique matchid corresponding to `timeline`, defaults to
+        The unique matchid corresponding to ``timeline``, defaults to
         None.
     creep_score : bool
         Whether to compute the creep_score, defaults to True.
     porportion : bool
-        Whether to add `goldPorportion` and `xpPorportion` as 
+        Whether to add ``goldPorportion`` and ``xpPorportion`` as 
         features to the players, default to True.
     
     Returns
     -------
     dict
         Dictionary containing cleaned and processed data for each frame
-        in `frames` in `timeline`. Ready for further data analysis.
+        in ``frames`` in ``timeline``. Ready for further data analysis.
 
     Notes
     -----
-        The function does not handle cases where element of `frames`
-        is larger than the total number of frames of the `timeline`.
+        The function does not handle cases where element of ``frames``
+        is larger than the total number of frames of the ``timeline``.
     """
     win = timeline['info']['frames'][-1]['events'][-1]['winningTeam'] == 100
     cleaned = clean_timeframe(timeline, frames)
@@ -302,9 +302,18 @@ def process_timeframe(timeline:dict, frames:list=[8], matchid:str=None,
     return final_dict
 
 
-def validate_timeline(timeline):
-    """Check if the given input is a valid `MatchTimelineDto`. 
-    Return the match id if it is valid, return `None` oterhwise.
+def validate_timeline(timeline:dict) -> str:
+    """Check if the given input is a valid ``MatchTimelineDto``. 
+    
+    Parameters
+    ----------
+    timeline : dict
+        Any dictionary.
+    
+    Returns
+    -------
+    str
+        matchId of a validated ``MatchTimelineDto``.
     """
     matchid = None
     try:

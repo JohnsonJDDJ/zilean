@@ -12,6 +12,7 @@ Welcome to zilean's documentation!
 
    zilean
    snapshots
+   timeline_crawler
 
 Indices and tables
 ==================

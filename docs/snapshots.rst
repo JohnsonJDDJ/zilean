@@ -1,4 +1,4 @@
-zilean.SnapShots class
+SnapShots class
 ==================
 
 .. automodule:: zilean.SnapShots
