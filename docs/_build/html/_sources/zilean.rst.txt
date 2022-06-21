@@ -1,8 +1,5 @@
-zilean package
-==============
-
 zilean.core module
-------------------
+==================
 
 .. automodule:: zilean.core
    :members:

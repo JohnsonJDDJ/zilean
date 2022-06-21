@@ -6,38 +6,40 @@ import re
 
 
 class SnapShots:
-    """
-    SnapShots is used for extracting interesting player data from
+    """SnapShots is used for extracting interesting player data from
     Riot `MatchTimelineDto`s. SnapShots is a helper object that
     facilitates data analysis on League of Legends matches.
 
     The reason for the name is because SnapShots can extract player 
-    data from a match at specific time intervals, or `frames` (in minutes).
-    Data at frames of interest can be used to, for 
+    data from a match at specific time intervals, or ``frames`` 
+    (in minutes). Data at frames of interest can be used to, for 
     example, predict the result of a match.
 
-    Arguments:
-
-    - timelines: The source data. It can be either a: 
-      - String, a file name where either a list of `MatchTimelineDto`s 
-        (in JSON format) or the computed summary statistics (csv) is 
-        stored.  The computed summary statistics (csv) should be an earlier saved
-        DataFrame using the SnapShots.to_disk() method.
-      - List. A list of `MatchTimelineDto`s.
-      - Dict. A single `MatchTimelineDto`.
-
-    Keyword Arguments:
-
-    - frames: List of integers, indicating the frames (in minutes) of
-      interest. Default [8]. This argument does nothing if the specified
-      input `timelines` file is a stored summary file in csv. 
-    - creep_score: Boolean. If True (recommended), then compute the creep
-      score for the players, then drop the `minionKilled` and 
-      `jungleMinionKilled` feature of the players.
-    - porportion: Boolean. If True, then add `goldPorportion` and 
-      `xpPorportion` as features to the players.
-    - verbose: Boolean, default False. If True, print out the progress 
-      of loading the source data.
+    Parameters
+    ----------
+    timelines : str | list | dict
+        The source data. It can be either a: 
+            - String, a file name where either a list of ``MatchTimelineDto`` s 
+              (in JSON format) or the computed summary statistics (csv) is 
+              stored.  The computed summary statistics (csv) should be an
+              earlier saved DataFrame using the SnapShots.to_disk() method.
+            - List. A list of ``MatchTimelineDto`` s.
+            - Dict. A single ``MatchTimelineDto``.
+    frames : list
+        Integers indicating the frames (in minutes) of
+        interest. Default [8]. This argument does nothing if the 
+        specified input `timelines` file is a stored summary file
+        in csv. 
+    creep_score: bool
+        Compute the creep score for the players, then drop the
+        ``minionKilled`` and ``jungleMinionKilled`` feature of the 
+        players. Defaults to True.
+    porportion: bool 
+        Add `goldPorportion` and `xpPorportion` as features to the
+        players. Defaults to True.
+    verbose: bool 
+        Print out the progress of loading the source data, defaults
+        to False.
     """
 
     def __init__(self, timelines, frames=[8], creep_score=True, porportion=True,
@@ -147,21 +149,23 @@ class SnapShots:
         #    self.feature_info_.append(new_dict)
 
     def summary(self, per_frame=False) -> list:
-        """
-        Return the summary for all the matches (Riot MatchTimelineDtos).
+        """Return the summary for all the matches (``MatchTimelineDto``).
         For each match, summary statistics of every time frame of interest
         is returned. The summary is ready for further data analysis.
 
-        Keyword Arguments:
+        Parameters
+        ----------
+        per_frame: bool
+            If False (default), each match (``MatchTimelineDto``)
+            is one dictionary. If True, each frame (in minutes) of a
+            match is one dictionary. Defaults to False.
 
-        - per_frame: Boolean. If False (default), each match
-          (Riot MatchTimelineDto) is one dictionary. If True, each frame
-          (in minutes) of a match is one dictionary.
-
-        Return:
-
-        - A list of dictionaries, ready for further data analysis. Each 
-          dictionary is either a match or a frame (see `per_frame`). 
+        Returns
+        -------
+        list
+            A list of dictionaries, ready for further data analysis. 
+            Each dictionary is either a match or a frame 
+            (see `per_frame`). 
         """
         # Return the summary based on `per_frame`
         if per_frame:
@@ -170,14 +174,17 @@ class SnapShots:
             return self.summary_
 
     def to_disk(self, path="data/", verbose=True) -> None:
-        """
-        Save the summaries to disk as csv files using pandas.DataFrame.to_csv()
+        """Save the summaries to disk as csv files using 
+        pandas.DataFrame.to_csv()
 
-        Keyword Arguments:
-
-        - path: String. Default `data/`, relative to your working directory.
-        - verbose: Boolean. Default True, so you can see where your files
-          are saved to. False to turn off.
+        Parameters
+        ----------
+        path : str
+            Path name relative to your working directory. Defaults 
+            to ``data/``
+        verbose : bool 
+            Print the directory where of the saved file. Defaults to
+            True
         """
         file_name = '_'.join(str(e) for e in self.frames)
         per_match_path = os.path.join(path, "match_"+file_name+".csv")
@@ -188,28 +195,27 @@ class SnapShots:
             print(f"Saved files to direcotry {os.path.join(os.getcwd(), path)}.")
 
     def get_lanes(self, lanes, per_frame=None) -> list:
-        """
-        Return a slice of the summery statistics that represents specific
-        lanes in the game. Statistics of a specific lane in the summary is 
-        marked by an underscore and a number at the end of each feature.
-        For example, `totalGold_0` represents the total gold difference 
-        of the TOP lane. 
+        """Return a slice of the summery statistics that represents
+        specific lanes in the game. Statistics of a specific lane in
+        the summary is marked by an underscore and a number at the
+        end of each feature. For example, ``totalGold_0`` represents 
+        the total gold difference of the TOP lane. 
 
-        Arguments:
+        Parameters
+        ----------
+        lane : list 
+            Position options are any of {"TOP", "JUG", "MID", "BOT",
+            "SUP"} or their corresponding index {0, 1, 2, 3, 4}. 
+        per_frame : :obj:`bool`, optional 
+            If False (default), each match (``MatchTimelineDto``)
+            is one dictionary. If True, each frame (in minutes) of a
+            match is one dictionary. Defaults to False.
 
-        - lane: List. Position options are any of {"TOP", "JUG", "MID", "BOT",
-          "SUP"} or their corresponding index {0, 1, 2, 3, 4}. 
-
-        Keyword Arguments:
-
-        - per_frame: Boolean, default None. If False, each match 
-          (Riot MatchTimelineDto) is one dictionary. If True, each frame 
-          (in minutes) of a match is one dictionary.
-
-        Return:
-
-        - A list of dictionaries including the statistics for the lanes
-          of interest, the matchid, and the label (`win`).
+        Returns
+        -------
+        list 
+            A list of dictionaries including the statistics for the
+            lanes of interest, the matchid, and the label (`win`).
         """
         if (per_frame is None) or (type(per_frame) is not bool):
             raise ValueError(

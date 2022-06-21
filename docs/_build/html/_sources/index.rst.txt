@@ -11,6 +11,7 @@ Welcome to zilean's documentation!
    :caption: Contents:
 
    zilean
+   snapshots
 
 Indices and tables
 ==================

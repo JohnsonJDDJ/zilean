@@ -1,7 +1,7 @@
-zilean.core module
+zilean.SnapShots class
 ==================
 
-.. automodule:: zilean.core
+.. automodule:: zilean.SnapShots
    :members:
    :undoc-members:
    :show-inheritance:
