@@ -1,6 +1,6 @@
 # zilean
 
-[![PyPI version](https://badge.fury.io/py/zilean.svg)](https://badge.fury.io/py/zilean) [![codecov](https://codecov.io/gh/JohnsonJDDJ/zilean/branch/main/graph/badge.svg?token=FF4RCILBK9)](https://codecov.io/gh/JohnsonJDDJ/zilean) [![Documentation Status](https://readthedocs.org/projects/zilean/badge/?version=main)](https://zilean.readthedocs.io/en/main/?badge=main)
+[![PyPI version](https://badge.fury.io/py/zilean.svg)](https://badge.fury.io/py/zilean) [![codecov](https://codecov.io/gh/JohnsonJDDJ/zilean/branch/main/graph/badge.svg?token=FF4RCILBK9)](https://codecov.io/gh/JohnsonJDDJ/zilean) [![Documentation Status](https://readthedocs.org/projects/zilean/badge/?version=v0.0.2)](https://zilean.readthedocs.io/en/v0.0.2/?badge=v0.0.2)
 
 > _Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match._
 
