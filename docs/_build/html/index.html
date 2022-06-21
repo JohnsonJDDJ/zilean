@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Welcome to zilean’s documentation! &#8212; zilean 0.0.1 documentation</title>
+    <title>zilean’s documentation &#8212; zilean 0.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css" />
@@ -35,8 +35,8 @@
 
           <div class="body" role="main">
             
-  <section id="welcome-to-zilean-s-documentation">
-<h1>Welcome to zilean’s documentation!<a class="headerlink" href="#welcome-to-zilean-s-documentation" title="Permalink to this heading">¶</a></h1>
+  <section id="zilean-s-documentation">
+<h1>zilean’s documentation<a class="headerlink" href="#zilean-s-documentation" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -45,6 +45,78 @@
 <li class="toctree-l1"><a class="reference internal" href="timeline_crawler.html">TimelineCrawler class</a></li>
 </ul>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">zilean</span></code> is designed to facilitate data analysis of the Riot
+<a class="reference external" href="https://developer.riotgames.com/apis#match-v5/GET_getTimeline">MatchTimelineDto</a>.
+The <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> is a powerful object that contains information
+of a specific <a class="reference external" href="https://leagueoflegends.com/">League of Legends</a> match
+at <strong>every minute mark</strong>. Naturally, the <code class="docutils literal notranslate"><span class="pre">MatchTimelineDto</span></code> became an
+<strong>ideal object for various machine learning tasks</strong>. For example,
+predicting match results using game statistics before the 16 minute
+mark.</p>
+<p>Different from traditional sports, esports such as League of Legends has
+an innate advantage with respect to the data collection process. Since
+every play was conducted digitally, it opened up a huge potential to
+explore and perform all kinds of data analysis. <code class="docutils literal notranslate"><span class="pre">zilean</span></code> hopes to
+explore the infinite potentials provided by the <a class="reference external" href="https://developer.riotgames.com/">Riot Games
+API</a>, <strong>and through the power of
+computing, make our community a better place.</strong></p>
+<p>GL:HF!</p>
+<section id="demo">
+<h2>Demo<a class="headerlink" href="#demo" title="Permalink to this heading">¶</a></h2>
+<p>Here is a quick look of how to do League of Legends data analysis with
+<code class="docutils literal notranslate"><span class="pre">zilean</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">zilean</span> <span class="kn">import</span> <span class="n">TimelineCrawler</span><span class="p">,</span> <span class="n">SnapShots</span><span class="p">,</span> <span class="n">read_api_key</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Use the TimelineCrawler to fetch `MatchTimelineDto`s</span>
+<span class="c1"># from Riot. The `MatchTimelineDto`s have game stats</span>
+<span class="c1"># at each minute mark.</span>
+
+<span class="c1"># We need a API key to fetch data. See the Riot Developer</span>
+<span class="c1"># Portal for more info.</span>
+<span class="n">api_key</span> <span class="o">=</span> <span class="n">read_api_key</span><span class="p">(</span><span class="n">you_api_key_here</span><span class="p">)</span>
+<span class="c1"># Crawl 2000 Diamond RANKED_SOLO_5x5 timelines from the Korean server.</span>
+<span class="n">crawler</span> <span class="o">=</span> <span class="n">TimelineCrawler</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;kr&quot;</span><span class="p">,</span>
+                          <span class="n">tier</span><span class="o">=</span><span class="s2">&quot;DIAMOND&quot;</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="s2">&quot;RANKED_SOLO_5x5&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">crawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="n">match_per_id</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;results.json&quot;</span><span class="p">)</span>
+<span class="c1"># This will take a long time!</span>
+
+<span class="c1"># We will look at the player statistics at 10 and 15 minute mark.</span>
+<span class="n">snaps</span> <span class="o">=</span> <span class="n">SnapShots</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+
+<span class="c1"># Store the player statistics using in a pandas DataFrame</span>
+<span class="n">player_stats</span> <span class="o">=</span> <span class="n">snaps</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">per_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">player_stats</span><span class="p">)</span>
+
+<span class="c1"># Look at the distribution of totalGold difference for `player 0` (TOP player)</span>
+<span class="c1"># at 15 minutes mark.</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;totalGold_0&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;frame&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">15</span><span class="p">],</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;win&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id1">
+<img alt="demo_1.png" src="_images/demo_1.png" />
+<figcaption>
+<p><span class="caption-text">demo_1.png</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Here is an example of some quick machine learning.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do some simple modelling</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+
+<span class="c1"># Define X and y for training data</span>
+<span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">player_stats</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">)</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;matchId&quot;</span><span class="p">,</span> <span class="s2">&quot;win&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s2">&quot;win&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># Build a default random forest classifier</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">()</span>
+<span class="n">rf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">y_fitted</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training accuracy: </span><span class="si">{</span><span class="n">mean</span><span class="p">(</span><span class="n">y_train</span> <span class="o">==</span> <span class="n">y_fitted</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
