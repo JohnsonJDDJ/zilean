@@ -4,7 +4,8 @@
 
 > _Zilean is a League of Legends character that can drift through past, present and future. The project is borrowing Zilean's temporal magic to foresee the result of a match._
 
-Documentation: [here](https://zilean.readthedocs.io/).
+Documentation: [here](https://zilean.readthedocs.io/).\
+**Interactive** demo: [myBinder](https://mybinder.org/v2/gh/JohnsonJDDJ/zilean/HEAD?labpath=examples%2Fexamples.ipynb).
 
 **The project is open to all sorts of contribution and collaboration! Please feel free to clone, fork, PR...anything! If you are interested, contact me!**
 
@@ -19,7 +20,7 @@ Contact: Johnson Du <johnsondzh@gmail.com>
 
 Different from traditional sports, esports such as League of Legends has an innate advantage with respect to the data collection process. Since every play was conducted digitally, it opened up a huge potential to explore and perform all kinds of data analysis. `zilean` hopes to explore the infinite potentials provided by the [Riot Games API](https://developer.riotgames.com/), **and through the power of computing, make our community a better place.**
 
-GL:HF!
+GL;HF!
 
 ## Demo
 

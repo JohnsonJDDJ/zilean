@@ -10,9 +10,10 @@ zilean's documentation
    :maxdepth: 2
    :caption: Contents:
 
-   zilean
    snapshots
    timeline_crawler
+   zilean
+   developer
 
 ``zilean`` is designed to facilitate data analysis of the Riot
 `MatchTimelineDto <https://developer.riotgames.com/apis#match-v5/GET_getTimeline>`__.
@@ -31,7 +32,7 @@ explore the infinite potentials provided by the `Riot Games
 API <https://developer.riotgames.com/>`__, **and through the power of
 computing, make our community a better place.**
 
-GL:HF!
+GL;HF!
 
 Demo
 ----
@@ -92,15 +93,8 @@ Here is an example of some quick machine learning.
    y_fitted = rf.predict(X_train)
    print(f"Training accuracy: {mean(y_train == y_fitted)}")
 
-.. |PyPI version| image:: https://badge.fury.io/py/zilean.svg
-   :target: https://badge.fury.io/py/zilean
-.. |codecov| image:: https://codecov.io/gh/JohnsonJDDJ/zilean/branch/main/graph/badge.svg?token=FF4RCILBK9
-   :target: https://codecov.io/gh/JohnsonJDDJ/zilean
-.. |Documentation Status| image:: https://readthedocs.org/projects/zilean/badge/?version=main
-   :target: https://zilean.readthedocs.io/en/main/?badge=main
-
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
