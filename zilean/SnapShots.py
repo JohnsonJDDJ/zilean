@@ -133,20 +133,33 @@ class SnapShots:
             raise ValueError("Input is neither a valid file name (csv of json), " +
                              "nor is a valid MatchTimelineDto")
 
-        # for key in self.summary()[0].keys():
-        #    info_name = key
-        #    #Split the name where there is a "_"
-        #    info_stuff = key.split("_")
-        #    info_feature = info_stuff[0]
-        #    info_lane = info_stuff[1]
-
-        #    #Split the last term by the letter "e" so that we can get the number at the end
-        #    split_frame = info_stuff[2].split("e")
-        #    info_frame = split_frame[1]
-        #    new_dict = {"name" : info_name, "feature" : info_feature, "lane" : info_lane, "frame" : info_frame}
-
-        #    #Append the newly created dictionary to self.feature.info
-        #    self.feature_info_.append(new_dict)
+        # Construct feature info
+        for key in self.summary_[0].keys():
+            # Split the feature name where there is a "_"
+            feature_info = key.split("_")
+            if len(feature_info) == 3:
+                self.feature_info_.append({
+                    "name" : key, 
+                    "feature" : feature_info[0], 
+                    "lane" : int(feature_info[1]), 
+                    "frame" : int(feature_info[2].split('e')[1])
+                })
+            elif len(feature_info) == 2 and len(self.frames) == 1:
+                self.feature_info_.append({
+                    "name": key, 
+                    "feature": feature_info[0],
+                    "lane": int(feature_info[1]),
+                    "frame": self.frames[0]
+                })
+            else:
+                self.feature_info_.append({
+                    "name": key, 
+                    "feature": None,
+                    "lane": None,
+                    "frame": None
+                })
+                
+            
 
     def summary(self, per_frame=False) -> list:
         """Return the summary for all the matches (``MatchTimelineDto``).
@@ -173,6 +186,7 @@ class SnapShots:
         else:
             return self.summary_
 
+
     def to_disk(self, path="data/", verbose=True) -> None:
         """Save the summaries to disk as csv files using 
         pandas.DataFrame.to_csv()
@@ -194,18 +208,27 @@ class SnapShots:
         if verbose:
             print(f"Saved files to direcotry {os.path.join(os.getcwd(), path)}.")
 
-    def get_lanes(self, lanes, per_frame=None) -> list:
-        """Return a slice of the summery statistics that represents
-        specific lanes in the game. Statistics of a specific lane in
-        the summary is marked by an underscore and a number at the
-        end of each feature. For example, ``totalGold_0`` represents 
-        the total gold difference of the TOP lane. 
+
+    def subset(self, features=[], lanes=[], frames=[], per_frame=False) -> list:
+        """Return a subset of the summery statistics. Features
+        of the summary statistics contain information that
+        is seperated by underscores. The generic format of a
+        feature is "FEATURE_LANE_frame#". For example, 
+        ``totalGold_0_frame8`` is the total gold difference 
+        between the TOP players at 8 minutes mark.
 
         Parameters
         ----------
-        lane : list 
-            Position options are any of {"TOP", "JUG", "MID", "BOT",
+        features : :obj:`list`, optional 
+            Features of interest. For available options, please
+            refer to the ``.feature_info_`` variable.
+        lanes : :obj:`list`, optional 
+            Lane options are any of {"TOP", "JUG", "MID", "BOT",
             "SUP"} or their corresponding index {0, 1, 2, 3, 4}. 
+        frames : :obj:`list`, optional
+            Frames options can only be chosen from the frames
+            specified during the initiation of this SnapShots 
+            instance.
         per_frame : :obj:`bool`, optional 
             If False (default), each match (``MatchTimelineDto``)
             is one dictionary. If True, each frame (in minutes) of a
@@ -222,19 +245,21 @@ class SnapShots:
                 "You must specify per_frame to either `True` or `False`.")
 
         full_summary = self.per_frame_summary_ if per_frame else self.summary_
-        str_convert = {"TOP": "0", "JUG": "1",
-                       "MID": "2", "BOT": "3", "SUP": "4"}
+        lane_str_convert = {"TOP": 0, "JUG": 1,
+                            "MID": 2, "BOT": 3, "SUP": 4}
         keys_to_extract = []
 
-        for lane in lanes:
-            # Convert `lanes` to all number strings
-            if lane in str_convert.keys():
-                lane = str_convert[lane]
-            elif type(lane) is int:
-                lane = str(lane)
-            # Add corresponding key for the lane to `keys_to_extract`
-            keys_to_extract += [key for key in full_summary[0].keys() if
-                                re.findall(r'\w+_([0-4])', key) == [lane]]
+        # Convert `lanes` to all integers
+        for i, lane in enumerate(lanes):
+            if lane in lane_str_convert.keys():
+                lanes[i] = lane_str_convert[lane]
+
+        # Add corresponding key to `keys_to_extract`
+        keys_to_extract += [col["name"] for col in self.feature_info_ if
+                            ((not lanes or col["lane"] in lanes) and 
+                            (not features or col["feature"] in features) and
+                            (not frames or col["frame"] in frames))]
+
         keys_to_extract += ["matchId", "win"]
         if per_frame:
             keys_to_extract += ["frame"]

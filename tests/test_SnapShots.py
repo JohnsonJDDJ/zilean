@@ -80,31 +80,27 @@ def test_summary_per_frame():
     assert per_frame["frame"] == 8
 
 
-def test_empty_get_lanes():
+def test_empty_subset():
     """Test both options of empty get_lanes."""
     snaps = SnapShots(example_file)
 
-    assert len(snaps.get_lanes([], per_frame=False)[0].keys()) == 2
-    assert len(snaps.get_lanes([], per_frame=True)[0].keys()) == 3
+    assert len(snaps.subset(per_frame=False)[0].keys()) == 52
+    assert len(snaps.subset(per_frame=True)[0].keys()) == 53
 
 
-def test_get_lanes_value():
-    """Test values of both options of get_lanes"""
-    snaps = SnapShots(example_file)
-    
-    per_match = snaps.get_lanes(["TOP", 2], per_frame=False)[0]
-    per_frame = snaps.get_lanes([0, "MID"], per_frame=True)[0]
-
-    assert per_frame["level_0"] == per_match["level_0"]
-    assert per_frame["xp_2"] == per_match["xp_2"]
-
-    assert "level_1" not in per_match.keys()
-    assert "level_4" not in per_frame.keys()
-
-
-def test_strange_lanes():
-    """Test invalid lanes for both options of get_lanes"""
+def test_invalid_subset():
+    """Test subset with invalid argument"""
     snaps = SnapShots(example_file)
 
-    assert len(snaps.get_lanes([5, 7], per_frame=False)[0].keys()) == 2
-    assert len(snaps.get_lanes(["NO", "FOO"], per_frame=True)[0].keys()) == 3
+    assert len(snaps.subset(frames=[9], per_frame=False)[0].keys()) == 2
+    assert len(snaps.subset(lanes=["FOO"], per_frame=True)[0].keys()) == 3
+    assert len(snaps.subset(features=["NOPE"], per_frame=False)[0].keys()) == 2
+
+
+def test_subset():
+    """Test subset with valid argument"""
+    snaps = SnapShots(example_file)
+
+    assert len(snaps.subset(features=["totalGold"])[0].keys()) == 7
+    assert len(snaps.subset(lanes=["TOP"], per_frame=True)[0].keys()) == 13
+    assert len(snaps.subset(frames=[8], per_frame=False)[0].keys()) == 52
