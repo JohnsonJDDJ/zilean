@@ -1,5 +1,5 @@
+from collections import defaultdict
 from copy import deepcopy
-from hashlib import new
 import pandas as pd
 
 from .core import *
@@ -285,4 +285,66 @@ class SnapShots:
         return duplicate
 
 
-    # def agg_team(self) -> list:
+    def agg(self, type, func=sum) -> list:
+        """Aggregate summary statistics either by
+        team or by frame. If by team, the statistics
+        across all five lanes are aggregated. If by
+        frame, the statistics across all frames are
+        aggregated. The default aggregate function
+        is the summation.
+
+        Parameters
+        ----------
+        type : str
+            Either "team" or "frame". 
+            - "team": Aggregate summary statistics
+              by team. A team consist of five lanes, 
+              marked by number 0 to 4 in the feature
+              names. For example: ``totalGold_0_frame8`` ,
+              ``totalGold_1_frame8`` , ..., 
+              ``totalGold_4_frame8`` will be aggregated
+              into a single feature ``totalGold_frame8`` .
+            - "frame": Aggregate summary statistics
+              by frame. Frames are usually marked by a number 
+              after "frame" the feature names. For example: 
+              ``totalGold_0_frame8`` and
+              ``totalGold_0_frame12`` will be aggregated
+              into a single feature ``totalGold_0`` .
+
+        func : function
+            A function to perform the aggregation. Defaults
+            to sum (the summation function).
+        
+        Returns
+        -------
+        list
+            Summary statistics after aggregation.
+
+        Notes
+        -----
+            This method is not compatible with per frame
+            summary. This feature may deploy in  feature 
+            versions.
+        """
+        mapping = defaultdict(list)
+        for col in self.feature_info_:
+            # None value means its a special feature
+            if not col["feature"]:
+                continue
+            if type == "team":
+                new_feature_name = col["feature"] + "_frame" + str(col["frame"])
+            elif type == "frame":
+                new_feature_name = col["feature"] + "_" + str(col["lane"])
+            mapping[new_feature_name].append(col["name"])
+        
+        print(mapping)
+
+        agg_summary = []
+        
+        for match in self.summary_:
+            row = {}
+            for k, v in mapping.items():
+                row[k] = func([match[vv] for vv in v])
+            agg_summary.append(row)
+
+        return agg_summary
