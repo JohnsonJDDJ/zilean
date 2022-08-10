@@ -4,8 +4,6 @@ import pandas as pd
 
 from .core import *
 
-import re
-
 
 class SnapShots:
     """SnapShots is used for extracting interesting player data from
