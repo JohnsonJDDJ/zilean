@@ -81,26 +81,26 @@ def test_summary_per_frame():
 
 
 def test_empty_subset():
-    """Test both options of empty get_lanes."""
+    """Test empty get_lanes."""
     snaps = SnapShots(example_file)
-
-    assert len(snaps.subset(per_frame=False)[0].keys()) == 52
-    assert len(snaps.subset(per_frame=True)[0].keys()) == 53
+    subset = snaps.subset()
+    assert len(subset.summary()[0].keys()) == 52
+    assert subset.summary()[0].keys() == snaps.summary()[0].keys()
 
 
 def test_invalid_subset():
     """Test subset with invalid argument"""
     snaps = SnapShots(example_file)
 
-    assert len(snaps.subset(frames=[9], per_frame=False)[0].keys()) == 2
-    assert len(snaps.subset(lanes=["FOO"], per_frame=True)[0].keys()) == 3
-    assert len(snaps.subset(features=["NOPE"], per_frame=False)[0].keys()) == 2
+    assert len(snaps.subset(frames=[9]).summary()[0].keys()) == 2
+    assert len(snaps.subset(lanes=["FOO"]).summary()[0].keys()) == 2
+    assert len(snaps.subset(features=["NOPE"]).summary()[0].keys()) == 2
 
 
 def test_subset():
     """Test subset with valid argument"""
     snaps = SnapShots(example_file)
 
-    assert len(snaps.subset(features=["totalGold"])[0].keys()) == 7
-    assert len(snaps.subset(lanes=["TOP"], per_frame=True)[0].keys()) == 13
-    assert len(snaps.subset(frames=[8], per_frame=False)[0].keys()) == 52
+    assert len(snaps.subset(features=["totalGold"]).summary()[0].keys()) == 7
+    assert len(snaps.subset(lanes=["TOP"]).summary()[0].keys()) == 12
+    assert len(snaps.subset(frames=[8]).summary()[0].keys()) == 52

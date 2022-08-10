@@ -1,3 +1,5 @@
+from copy import deepcopy
+from hashlib import new
 import pandas as pd
 
 from .core import *
@@ -209,9 +211,10 @@ class SnapShots:
             print(f"Saved files to direcotry {os.path.join(os.getcwd(), path)}.")
 
 
-    def subset(self, features=[], lanes=[], frames=[], per_frame=False) -> list:
-        """Return a subset of the summery statistics. Features
-        of the summary statistics contain information that
+    def subset(self, features=[], lanes=[], frames=[]):
+        """Return a new SnapShots with only a subset of the 
+        original summary statistics. Features
+        of the original summary statistics contain information that
         is seperated by underscores. The generic format of a
         feature is "FEATURE_LANE_frame#". For example, 
         ``totalGold_0_frame8`` is the total gold difference 
@@ -229,22 +232,19 @@ class SnapShots:
             Frames options can only be chosen from the frames
             specified during the initiation of this SnapShots 
             instance.
-        per_frame : :obj:`bool`, optional 
-            If False (default), each match (``MatchTimelineDto``)
-            is one dictionary. If True, each frame (in minutes) of a
-            match is one dictionary. Defaults to False.
 
         Returns
         -------
-        list 
-            A list of dictionaries including the statistics for the
-            lanes of interest, the matchid, and the label (`win`).
+        zilean.SnapShots 
+            A new SnapShots with only a subset of the 
+            original summary statistics.
+        
+        Notes
+        -----
+            The method will return a copy of the original
+            summary statistics if no argument were provided.
         """
-        if (per_frame is None) or (type(per_frame) is not bool):
-            raise ValueError(
-                "You must specify per_frame to either `True` or `False`.")
-
-        full_summary = self.per_frame_summary_ if per_frame else self.summary_
+        duplicate = deepcopy(self)
         lane_str_convert = {"TOP": 0, "JUG": 1,
                             "MID": 2, "BOT": 3, "SUP": 4}
         keys_to_extract = []
@@ -254,19 +254,35 @@ class SnapShots:
             if lane in lane_str_convert.keys():
                 lanes[i] = lane_str_convert[lane]
 
-        # Add corresponding key to `keys_to_extract`
-        keys_to_extract += [col["name"] for col in self.feature_info_ if
-                            ((not lanes or col["lane"] in lanes) and 
-                            (not features or col["feature"] in features) and
-                            (not frames or col["frame"] in frames))]
+        # Add key matching the criteria to `keys_to_extract`
+        keys_to_extract += []
+        # Construct a new feature_info_
+        new_feature_info = []
+        for col in self.feature_info_:
+            if ((not lanes or col["lane"] in lanes) and 
+                (not features or col["feature"] in features) and
+                (not frames or col["frame"] in frames)):
+                keys_to_extract += [col["name"]]
+                new_feature_info += [col]
 
+        new_feature_info += self.feature_info_[-2:]
+        duplicate.feature_info_ = new_feature_info
+
+        # Construct the new summary_ using keys_to_extract
         keys_to_extract += ["matchId", "win"]
-        if per_frame:
-            keys_to_extract += ["frame"]
+        new_summary_ = []
+        for row in self.summary_:
+            new_summary_ += [{key: row[key] for key in keys_to_extract}]
+        duplicate.summary_ = new_summary_
 
-        # Construct slice of summary using `keys_to_extract`
-        summary_slice = []
-        for row in full_summary:
-            summary_slice += [{key: row[key] for key in keys_to_extract}]
+        # Construct the new per_frame_summary_ using keys_to_extract
+        keys_to_extract += ["frame"]
+        new_per_frame_summary_ = []
+        for row in self.per_frame_summary_:
+            new_per_frame_summary_ += [{key: row[key] for key in keys_to_extract}]
+        duplicate.per_frame_summary_ = new_per_frame_summary_
+        
+        return duplicate
 
-        return summary_slice
+
+    # def agg_team(self) -> list:
