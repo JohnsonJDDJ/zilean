@@ -324,7 +324,12 @@ class SnapShots:
             summary. This feature may deploy in  feature 
             versions.
         """
+        # Mapping for which features should be joined into agg feature
+        if type != "team" or type != "frame":
+            raise ValueError('Argument `type` can only be "team" or "frame".')
+
         mapping = defaultdict(list)
+
         for col in self.feature_info_:
             # None value means its a special feature
             if not col["feature"]:
@@ -334,11 +339,10 @@ class SnapShots:
             elif type == "frame":
                 new_feature_name = col["feature"] + "_" + str(col["lane"])
             mapping[new_feature_name].append(col["name"])
-        
-        print(mapping)
 
+        # New summary list
         agg_summary = []
-        
+
         for match in self.summary_:
             row = {}
             for k, v in mapping.items():
