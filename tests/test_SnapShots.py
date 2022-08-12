@@ -104,3 +104,52 @@ def test_subset():
     assert len(snaps.subset(features=["totalGold"]).summary()[0].keys()) == 7
     assert len(snaps.subset(lanes=["TOP"]).summary()[0].keys()) == 12
     assert len(snaps.subset(frames=[8]).summary()[0].keys()) == 52
+
+
+def test_invalid_agg():
+    """Test agg with invalid argument"""
+    snaps = SnapShots(example_file)
+
+    try:
+        snaps.agg("foo")
+    except ValueError:
+        pass
+
+
+def test_agg_type():
+    """Test different types of agg"""
+    snaps = SnapShots(example_file, frames=[8, 12])
+
+    # Test agg by frame
+    by_frame = snaps.agg("frame")[0]
+    assert "creepScore_3" in by_frame
+    assert by_frame["creepScore_3"] == -26
+
+    # Teat agg by team
+    by_team = snaps.agg("team")[0]
+    assert "totalDamageDone_frame12" in by_team
+    assert by_team["totalDamageDone_frame12"] == -25846
+
+
+def test_agg_func():
+    """Test agg using different aggregation function"""
+    snaps = SnapShots(example_file, frames=[8, 12])
+
+    # Using max
+    by_team = snaps.agg("team", max)[0]
+    assert by_team["totalDamageTaken_frame8"] == 1246
+    assert by_team["totalGold_frame12"] == 554
+
+    # Custom function
+    custom = snaps.agg("frame", lambda x: x[1])[0]
+    assert custom["level_2"] == -2
+    assert custom["xp_3"] == -203
+
+
+def test_subset_agg():
+    """Tets agg after subset"""
+    snaps = SnapShots(example_file, frames=[8, 12])
+    subset_agg_1 = snaps.subset(features=["xp"]).agg("team")[0]
+    assert "xp_frame8" in subset_agg_1
+    assert "totalGold_frame8" not in subset_agg_1
+    assert subset_agg_1["xp_frame8"] == -1553
