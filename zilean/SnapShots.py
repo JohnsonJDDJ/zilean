@@ -1,5 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
+from typing import Callable
 import pandas as pd
 
 from .core import *
@@ -216,7 +217,9 @@ class SnapShots:
         is seperated by underscores. The generic format of a
         feature is "FEATURE_LANE_frame#". For example, 
         ``totalGold_0_frame8`` is the total gold difference 
-        between the TOP players at 8 minutes mark.
+        between the TOP players at 8 minutes mark. This 
+        method will return a copy of the original SnapShots
+        instance if no argument were provided.
 
         Parameters
         ----------
@@ -239,8 +242,11 @@ class SnapShots:
         
         Notes
         -----
-            The method will return a copy of the original
-            summary statistics if no argument were provided.
+            This method is not compatible does not support
+            subsetting the per frame summary. Only the
+            per match summary will be subsetted. Support
+            of per frame summary will be developed in future
+            versions.
         """
         duplicate = deepcopy(self)
         lane_str_convert = {"TOP": 0, "JUG": 1,
@@ -273,17 +279,17 @@ class SnapShots:
             new_summary_ += [{key: row[key] for key in keys_to_extract}]
         duplicate.summary_ = new_summary_
 
-        # Construct the new per_frame_summary_ using keys_to_extract
-        keys_to_extract += ["frame"]
-        new_per_frame_summary_ = []
-        for row in self.per_frame_summary_:
-            new_per_frame_summary_ += [{key: row[key] for key in keys_to_extract}]
-        duplicate.per_frame_summary_ = new_per_frame_summary_
+        # # Construct the new per_frame_summary_ using keys_to_extract
+        # keys_to_extract += ["frame"]
+        # new_per_frame_summary_ = []
+        # for row in self.per_frame_summary_:
+        #     new_per_frame_summary_ += [{key: row[key] for key in keys_to_extract}]
+        # duplicate.per_frame_summary_ = new_per_frame_summary_
         
         return duplicate
 
 
-    def agg(self, type, func=sum) -> list:
+    def agg(self, type, func:Callable[..., float]=sum) -> list:
         """Aggregate summary statistics either by
         team or by frame. If by team, the statistics
         across all five lanes are aggregated. If by
@@ -321,11 +327,11 @@ class SnapShots:
         Notes
         -----
             This method is not compatible with per frame
-            summary. This feature may deploy in  feature 
-            versions.
+            summary. This feature will be developed in 
+            future versions.
         """
         # Mapping for which features should be joined into agg feature
-        if type != "team" or type != "frame":
+        if type not in ("team", "frame"):
             raise ValueError('Argument `type` can only be "team" or "frame".')
 
         mapping = defaultdict(list)
